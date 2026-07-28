@@ -13,7 +13,7 @@ import { LayoutGrid, TableProperties, BarChart3, Globe } from 'lucide-react';
 
 const AppContent = () => {
   const { t, language, setLanguage } = useLanguage();
-  const { projects, addProject, updateProject, deleteProject } = useProjects();
+  const { projects, addProject, updateProject, deleteProject, loading } = useProjects();
 
   const [viewMode, setViewMode] = useState('table'); // table, kanban, analytics
   const [searchTerm, setSearchTerm] = useState('');
@@ -114,9 +114,15 @@ const AppContent = () => {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
-        <KPIDashboard projects={projects} />
+        {loading ? (
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
+          </div>
+        ) : (
+          <>
+            <KPIDashboard projects={projects} />
 
-        <FilterBar
+            <FilterBar
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
           selectedProgram={selectedProgram}
@@ -129,29 +135,31 @@ const AppContent = () => {
           filteredProjects={filteredProjects}
         />
 
-        {/* View Rendering */}
-        <div className="transition-all duration-300 ease-in-out">
-          {viewMode === 'table' && (
-            <TableView
-              projects={filteredProjects}
-              onEdit={handleOpenEdit}
-              onViewDetails={handleOpenDetails}
-              onDelete={deleteProject}
-              onPhotoView={handleOpenPhotoView}
-            />
-          )}
-          {viewMode === 'kanban' && (
-            <KanbanView
-              projects={filteredProjects}
-              onEdit={handleOpenEdit}
-              onViewDetails={handleOpenDetails}
-              onPhotoView={handleOpenPhotoView}
-            />
-          )}
-          {viewMode === 'analytics' && (
-            <AnalyticsView projects={filteredProjects} />
-          )}
-        </div>
+            {/* View Rendering */}
+            <div className="transition-all duration-300 ease-in-out">
+              {viewMode === 'table' && (
+                <TableView
+                  projects={filteredProjects}
+                  onEdit={handleOpenEdit}
+                  onViewDetails={handleOpenDetails}
+                  onDelete={deleteProject}
+                  onPhotoView={handleOpenPhotoView}
+                />
+              )}
+              {viewMode === 'kanban' && (
+                <KanbanView
+                  projects={filteredProjects}
+                  onEdit={handleOpenEdit}
+                  onViewDetails={handleOpenDetails}
+                  onPhotoView={handleOpenPhotoView}
+                />
+              )}
+              {viewMode === 'analytics' && (
+                <AnalyticsView projects={filteredProjects} />
+              )}
+            </div>
+          </>
+        )}
       </main>
 
       {/* Modals */}
