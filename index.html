@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Regional Development Project Tracker</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- FontAwesome Icons (Replaces Lucide-React for browser compatibility) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- React & ReactDOM Core Libraries -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    
+    <!-- Babel for in-browser JSX compilation -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <style>
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+
+    <!-- Load Firebase via Modules and expose to the global window -->
+    <script type="module">
+        Promise.all([
+            import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"),
+            import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"),
+            import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js")
+        ]).then(([appPkg, authPkg, firestorePkg]) => {
+            window.FirebaseAPI = {
+                initializeApp: appPkg.initializeApp,
+                getAuth: authPkg.getAuth,
+                signInAnonymously: authPkg.signInAnonymously,
+                onAuthStateChanged: authPkg.onAuthStateChanged,
+                getFirestore: firestorePkg.getFirestore,
+                doc: firestorePkg.doc,
+                setDoc: firestorePkg.setDoc,
+                deleteDoc: firestorePkg.deleteDoc,
+                onSnapshot: firestorePkg.onSnapshot,
+                collection: firestorePkg.collection
+            };
+            window.dispatchEvent(new Event('FirebaseReady'));
+        }).catch(err => {
+            document.getElementById('root').innerHTML = `
+                <div class="min-h-screen flex items-center justify-center bg-slate-50 p-6">
+                    <div class="bg-white p-8 rounded-2xl shadow-xl max-w-lg border border-red-100 text-center">
+                        <i class="fa-solid fa-triangle-exclamation text-5xl text-red-500 mb-4"></i>
+                        <h2 class="text-xl font-bold text-slate-800 mb-2">Browser Security Blocked Database</h2>
+                        <p class="text-sm text-slate-600 mb-4">
+                            You opened this file directly via <strong>file://</strong> protocol. Modern browsers block database modules for security reasons when opened this way.
+                        </p>
+                        <div class="text-sm text-left text-emerald-800 bg-emerald-50 p-4 rounded-xl border border-emerald-200">
+                            <strong>How to fix this quickly:</strong><br/>
+                            1. Download <a href="https://code.visualstudio.com/" target="_blank" class="underline font-bold">VS Code</a> (free code editor).<br/>
+                            2. Open this folder in VS Code.<br/>
+                            3. Go to Extensions and install <strong>"Live Server"</strong>.<br/>
+                            4. Right-click your <code>index.html</code> file and select <strong>"Open with Live Server"</strong>.
+                        </div>
+                    </div>
+                </div>
+            `;
+            console.error("Firebase Module Error:", err);
+        });
+    </script>
+</head>
+<body>
+    <div id="root">
+        <!-- Loading state -->
+        <div class="min-h-screen flex items-center justify-center bg-slate-50 text-emerald-800 font-semibold text-lg">
+            <i class="fa-solid fa-circle-notch fa-spin mr-3"></i> Loading System...
+        </div>
+    </div>
+
+    <script type="text/babel">
+        const startApp = () => {
+            const { useState, useEffect, useMemo } = React;
+            const { 
+                initializeApp, getAuth, signInAnonymously, onAuthStateChanged, 
+                getFirestore, doc, setDoc, deleteDoc, onSnapshot, collection 
+            } = window.FirebaseAPI;
+
+            // Firebase Config
+            const firebaseConfig = {
+                apiKey: "AIzaSyD1ebh4lCD1ryzEBmW4ijSfa0zcOOm3IUE",
+                authDomain: "testing-panel-10b7f.firebaseapp.com",
+                projectId: "testing-panel-10b7f",
+                storageBucket: "testing-panel-10b7f.firebasestorage.app",
+                messagingSenderId: "1022832505382",
+                appId: "1:1022832505382:web:8a163501f2353664992ce7"
+            };
+
+            const app = initializeApp(firebaseConfig);
+            const auth = getAuth(app);
+            const db = getFirestore(app);
+            const collectionAppId = "regional-tracker-v1"; // Shared collection ID
+
+            function App() {
+                const [projects, setProjects] = useState([]);
+                const [user, setUser] = useState(null);
+                const [searchTerm, setSearchTerm] = useState("");
+                const [selectedProgram, setSelectedProgram] = useState("All");
+                const [selectedStatus, setSelectedStatus] = useState("All");
+                const [viewMode, setViewMode] = useState("table"); 
+                const [language, setLanguage] = useState("si"); 
+                
+                // Modals
+                const [selectedProject, setSelectedProject] = useState(null);
+                const [isDetailOpen, setIsDetailOpen] = useState(false);
+                const [isFormOpen, setIsFormOpen] = useState(false);
+                const [editingProject, setEditingProject] = useState(null);
+                const [photoViewerProject, setPhotoViewerProject] = useState(null);
+
+                // Initialize Auth
+                useEffect(() => {
+                    signInAnonymously(auth).catch(error => console.error("Auth error:", error));
+                    const unsubscribe = onAuthStateChanged(auth, setUser);
+                    return () => unsubscribe();
+                }, []);
+
+                // Sync with Firebase Database
+                useEffect(() => {
+                    if (!user) return;
+                    
+                    const projectsRef = collection(db, 'artifacts', collectionAppId, 'public', 'data', 'projects');
+                    const unsubscribe = onSnapshot(projectsRef, (snapshot) => {
+                        const loadedProjects = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                        setProjects(loadedProjects);
+                    }, (error) => {
+                        console.error("Firestore sync error:", error);
+                    });
+
+                    return () => unsubscribe();
+                }, [user]);
+
+                const t = {
+                    title: language === 'si' ? "ප්‍රාදේශීය ව්‍යාපෘති කළමනාකරණ පද්ධතිය" : "Regional Development Project Tracker",
+                    subtitle: language === 'si' ? "ප්‍රාදේශීය සංවර්ධන ව්‍යාපෘති ප්‍රගතිය හා ප්‍රතිපාදන පාලන පුවරුව" : "Monitoring & Financial Tracking Database",
+                    totalProjects: language === 'si' ? "මුළු ව්‍යාපෘති ගණන" : "Total Projects",
+                    totalAllocation: language === 'si' ? "මුළු ප්‍රතිපාදන (රු. මි.)" : "Total Allocation (Rs. M)",
+                    totalPaid: language === 'si' ? "ගෙවන ලද මුළු මුදල (රු.)" : "Disbursed Payments (LKR)",
+                    utilizationRate: language === 'si' ? "ප්‍රතිපාදන භාවිත අනුපාතය" : "Utilization Rate",
+                    completed: language === 'si' ? "වැඩ අවසන්" : "Completed",
+                    inProgress: language === 'si' ? "ක්‍රියාත්මක වෙමින් පවතී" : "In Progress",
+                    searchPlaceholder: language === 'si' ? "ව්‍යාපෘති නම, GN වසම, කොන්ත්‍රාත්කරු සොයන්න..." : "Search project name, GN division, contractor...",
+                    programFilter: language === 'si' ? "වැඩසටහන" : "Program",
+                    statusFilter: language === 'si' ? "තත්ත්වය" : "Status",
+                    allPrograms: language === 'si' ? "සියලුම වැඩසටහන්" : "All Programs",
+                    allStatuses: language === 'si' ? "සියලුම තත්ත්වයන්" : "All Statuses",
+                    addProject: language === 'si' ? "අලුත් ව්‍යාපෘතියක්" : "New Project",
+                    exportCSV: language === 'si' ? "ලැයිස්තුව Export කරන්න" : "Export CSV",
+                    actions: language === 'si' ? "ක්‍රියාකාරකම්" : "Actions",
+                    noData: language === 'si' ? "කිසිදු ව්‍යාපෘතියක් හමු නොවීය. දත්ත සමුදාය හිස්ව පවතී." : "No projects found. Database is empty.",
+                    beforeAfter: language === 'si' ? "ඡායාරූප සසඳන්න" : "Photos",
+                };
+
+                const filteredProjects = useMemo(() => {
+                    return projects.filter(p => {
+                        const matchesSearch = 
+                            p.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                            p.gnDivision?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                            (p.contractor && p.contractor.toLowerCase().includes(searchTerm.toLowerCase()));
+                        
+                        const matchesProgram = selectedProgram === "All" || p.program === selectedProgram;
+                        const matchesStatus = selectedStatus === "All" || p.status === selectedStatus;
+                        return matchesSearch && matchesProgram && matchesStatus;
+                    });
+                }, [projects, searchTerm, selectedProgram, selectedStatus]);
+
+                const stats = useMemo(() => {
+                    const totalAlloc = projects.reduce((acc, curr) => acc + Number(curr.allocationMillion || 0), 0);
+                    const totalPaid = projects.reduce((acc, curr) => acc + Number(curr.paymentAmount || 0), 0);
+                    const totalAllocRs = totalAlloc * 1000000;
+                    const utilization = totalAllocRs > 0 ? ((totalPaid / totalAllocRs) * 100).toFixed(1) : "0";
+                    const completedCount = projects.filter(p => p.status === "වැඩ අවසන්" || p.status === "Completed").length;
+                    
+                    return {
+                        totalProjects: projects.length,
+                        totalAlloc: totalAlloc.toFixed(3),
+                        totalPaidFormatted: totalPaid.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+                        utilization,
+                        completedCount
+                    };
+                }, [projects]);
+
+                const programOptions = useMemo(() => Array.from(new Set(projects.map(p => p.program))).filter(Boolean), [projects]);
+                const statusOptions = useMemo(() => Array.from(new Set(projects.map(p => p.status))).filter(Boolean), [projects]);
+
+                const handleExportCSV = () => {
+                    const headers = ["ID", "Year", "GN Division", "Project Name", "Program", "Contractor", "Allocation (Millions LKR)", "Start Date", "Status", "Payments Made (LKR)"];
+                    const rows = filteredProjects.map(p => [
+                        `"${p.id}"`, `"${p.year}"`, `"${p.gnDivision}"`, `"${p.name?.replace(/"/g, '""')}"`,
+                        `"${p.program}"`, `"${p.contractor || ''}"`, p.allocationMillion, `"${p.startDate}"`,
+                        `"${p.status}"`, p.paymentAmount
+                    ]);
+                    const csvContent = "\uFEFF" + [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
+                    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+                    const link = document.createElement("a");
+                    link.href = URL.createObjectURL(blob);
+                    link.download = `Projects_${new Date().toISOString().slice(0, 10)}.csv`;
+                    link.click();
+                };
+
+                const handleDeleteProject = async (id) => {
+                    if (window.confirm(language === 'si' ? "මෙම ව්‍යාපෘතිය ඉවත් කිරීමට අවශ්‍යද?" : "Delete this project?")) {
+                        if (!user) return;
+                        try {
+                            await deleteDoc(doc(db, 'artifacts', collectionAppId, 'public', 'data', 'projects', id));
+                            if (selectedProject?.id === id) setIsDetailOpen(false);
+                        } catch (error) {
+                            console.error("Error deleting:", error);
+                        }
+                    }
+                };
+
+                const handleOpenForm = (proj = null) => {
+                    setEditingProject(proj);
+                    setIsFormOpen(true);
+                };
+
+                const handleSaveProject = async (e) => {
+                    e.preventDefault();
+                    if (!user) return;
+
+                    const formData = new FormData(e.target);
+                    const projectsRef = collection(db, 'artifacts', collectionAppId, 'public', 'data', 'projects');
+                    
+                    // Generate new document reference or use existing
+                    const docRef = editingProject 
+                        ? doc(db, 'artifacts', collectionAppId, 'public', 'data', 'projects', editingProject.id)
+                        : doc(projectsRef);
+
+                    const newObj = {
+                        id: docRef.id,
+                        year: formData.get("year"), 
+                        gnDivision: formData.get("gnDivision"),
+                        name: formData.get("name"), 
+                        program: formData.get("program"), 
+                        contractor: formData.get("contractor"),
+                        allocationMillion: parseFloat(formData.get("allocationMillion") || 0),
+                        startDate: formData.get("startDate"), 
+                        targetCompletionDate: formData.get("targetCompletionDate"),
+                        actualCompletionDate: formData.get("actualCompletionDate"), 
+                        status: formData.get("status"),
+                        paymentAmount: parseFloat(formData.get("paymentAmount") || 0),
+                        beforePhoto: formData.get("beforePhoto") || "", 
+                        afterPhoto: formData.get("afterPhoto") || ""
+                    };
+
+                    try {
+                        await setDoc(docRef, newObj);
+                        setIsFormOpen(false);
+                        setEditingProject(null);
+                    } catch (error) {
+                        console.error("Error saving:", error);
+                    }
+                };
+
+                return (
+                    <div className="min-h-screen bg-slate-50 text-slate-800 font-sans pb-12">
+                        {/* Header */}
+                        <header className="bg-emerald-800 text-white shadow-lg sticky top-0 z-30">
+                            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+                                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                                    <div className="flex items-center space-x-3">
+                                        <div className="bg-emerald-600 p-2.5 rounded-xl shadow-md border border-emerald-500">
+                                            <i className="fa-solid fa-building text-white text-xl"></i>
+                                        </div>
+                                        <div>
+                                            <h1 className="text-xl sm:text-2xl font-bold leading-tight">{t.title}</h1>
+                                            <p className="text-emerald-200 text-xs sm:text-sm">{t.subtitle}</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center space-x-3 self-end md:self-auto">
+                                        <button onClick={() => setLanguage(l => l === 'si' ? 'en' : 'si')} className="flex items-center space-x-1.5 bg-emerald-700 hover:bg-emerald-600 px-3 py-1.5 rounded-lg border border-emerald-500/50 text-xs sm:text-sm font-medium transition shadow-sm">
+                                            <i className="fa-solid fa-globe text-emerald-200"></i>
+                                            <span>{language === 'si' ? "English" : "සිංහල"}</span>
+                                        </button>
+                                        <button onClick={handleExportCSV} className="flex items-center space-x-1.5 bg-white text-emerald-800 hover:bg-emerald-50 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition shadow-sm">
+                                            <i className="fa-solid fa-download"></i>
+                                            <span className="hidden sm:inline">{t.exportCSV}</span>
+                                        </button>
+                                        <button onClick={() => handleOpenForm()} className="flex items-center space-x-1.5 bg-amber-500 hover:bg-amber-400 text-slate-900 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition shadow-sm">
+                                            <i className="fa-solid fa-plus"></i>
+                                            <span>{t.addProject}</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </header>
+
+                        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 space-y-6">
+                            {/* KPI Dashboard */}
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                <div className="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between hover:shadow-md transition">
+                                    <div className="flex items-center justify-between text-slate-500 mb-2">
+                                        <span className="text-xs font-semibold uppercase tracking-wider">{t.totalProjects}</span>
+                                        <i className="fa-solid fa-layer-group text-indigo-500 text-lg"></i>
+                                    </div>
+                                    <div>
+                                        <div className="text-2xl sm:text-3xl font-extrabold text-slate-900">{stats.totalProjects}</div>
+                                        <div className="text-xs text-slate-500 mt-1 flex items-center gap-1">
+                                            <span className="text-emerald-600 font-semibold">{stats.completedCount}</span> {t.completed}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between hover:shadow-md transition">
+                                    <div className="flex items-center justify-between text-slate-500 mb-2">
+                                        <span className="text-xs font-semibold uppercase tracking-wider">{t.totalAllocation}</span>
+                                        <i className="fa-solid fa-dollar-sign text-emerald-600 text-lg"></i>
+                                    </div>
+                                    <div>
+                                        <div className="text-2xl sm:text-3xl font-extrabold text-slate-900">{stats.totalAlloc} <span className="text-sm font-normal text-slate-500">M</span></div>
+                                    </div>
+                                </div>
+                                <div className="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between hover:shadow-md transition">
+                                    <div className="flex items-center justify-between text-slate-500 mb-2">
+                                        <span className="text-xs font-semibold uppercase tracking-wider">{t.totalPaid}</span>
+                                        <i className="fa-solid fa-file-invoice-dollar text-blue-600 text-lg"></i>
+                                    </div>
+                                    <div>
+                                        <div className="text-xl sm:text-2xl font-extrabold text-slate-900 truncate">Rs. {stats.totalPaidFormatted}</div>
+                                    </div>
+                                </div>
+                                <div className="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between hover:shadow-md transition">
+                                    <div className="flex items-center justify-between text-slate-500 mb-2">
+                                        <span className="text-xs font-semibold uppercase tracking-wider">{t.utilizationRate}</span>
+                                        <i className="fa-solid fa-arrow-trend-up text-amber-500 text-lg"></i>
+                                    </div>
+                                    <div>
+                                        <div className="text-2xl sm:text-3xl font-extrabold text-slate-900">{stats.utilization}%</div>
+                                        <div className="w-full bg-slate-100 rounded-full h-2 mt-2 overflow-hidden">
+                                            <div className="bg-emerald-500 h-2 rounded-full transition-all duration-500" style={{ width: `${Math.min(Number(stats.utilization), 100)}%` }}></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {}
+                            <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+                                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+                                    <div className="relative flex-1">
+                                        <i className="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                                        <input type="text" placeholder={t.searchPlaceholder} value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition" />
+                                        {searchTerm && (
+                                            <button onClick={() => setSearchTerm("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+                                                <i className="fa-solid fa-xmark"></i>
+                                            </button>
+                                        )}
+                                    </div>
+                                    <div className="flex flex-wrap items-center gap-2">
+                                        <div className="flex items-center space-x-1.5 bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5">
+                                            <i className="fa-solid fa-filter text-slate-500"></i>
+                                            <select value={selectedProgram} onChange={(e) => setSelectedProgram(e.target.value)} className="bg-transparent text-xs sm:text-sm font-medium text-slate-700 outline-none cursor-pointer">
+                                                <option value="All">{t.allPrograms}</option>
+                                                {programOptions.map(prog => <option key={prog} value={prog}>{prog}</option>)}
+                                            </select>
+                                        </div>
+                                        <div className="flex items-center space-x-1.5 bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5">
+                                            <i className="fa-solid fa-clock text-slate-500"></i>
+                                            <select value={selectedStatus} onChange={(e) => setSelectedStatus(e.target.value)} className="bg-transparent text-xs sm:text-sm font-medium text-slate-700 outline-none cursor-pointer">
+                                                <option value="All">{t.allStatuses}</option>
+                                                {statusOptions.map(st => <option key={st} value={st}>{st}</option>)}
+                                            </select>
+                                        </div>
+                                        <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200 ml-auto">
+                                            <button onClick={() => setViewMode('table')} className={`p-1.5 rounded-lg text-xs font-semibold flex items-center space-x-1 transition ${viewMode === 'table' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-800'}`}><i className="fa-solid fa-table text-sm"></i></button>
+                                            <button onClick={() => setViewMode('kanban')} className={`p-1.5 rounded-lg text-xs font-semibold flex items-center space-x-1 transition ${viewMode === 'kanban' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-800'}`}><i className="fa-solid fa-table-cells-large text-sm"></i></button>
+                                            <button onClick={() => setViewMode('analytics')} className={`p-1.5 rounded-lg text-xs font-semibold flex items-center space-x-1 transition ${viewMode === 'analytics' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-800'}`}><i className="fa-solid fa-chart-column text-sm"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {}
+                            {viewMode === 'table' && (
+                                <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                                    <div className="overflow-x-auto">
+                                        <table className="w-full text-left text-sm border-collapse">
+                                            <thead>
+                                                <tr className="bg-slate-100/80 text-slate-700 font-semibold border-b border-slate-200">
+                                                    <th className="py-3.5 px-4">{language === 'si' ? "වර්ෂය" : "Year"}</th>
+                                                    <th className="py-3.5 px-4">{language === 'si' ? "ග්‍රා. නි. වසම" : "GN"}</th>
+                                                    <th className="py-3.5 px-4 min-w-[280px]">{language === 'si' ? "ව්‍යාපෘතියේ නම" : "Project Name"}</th>
+                                                    <th className="py-3.5 px-4 text-right">Alloc. (M)</th>
+                                                    <th className="py-3.5 px-4 text-center">Status</th>
+                                                    <th className="py-3.5 px-4 text-right">Payments (LKR)</th>
+                                                    <th className="py-3.5 px-4 text-center">Photos</th>
+                                                    <th className="py-3.5 px-4 text-center">Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="divide-y divide-slate-100">
+                                                {filteredProjects.length === 0 ? (
+                                                    <tr><td colSpan="8" className="py-12 text-center text-slate-400"><i className="fa-solid fa-circle-exclamation text-3xl mb-2 opacity-60"></i><p>{t.noData}</p></td></tr>
+                                                ) : (
+                                                    filteredProjects.map(p => {
+                                                        const isCompleted = p.status === "වැඩ අවසන්" || p.status === "Completed";
+                                                        const safeGn = p.gnDivision ? p.gnDivision.split('-')[0] : "N/A";
+                                                        return (
+                                                            <tr key={p.id} className="hover:bg-slate-50/80 transition-colors">
+                                                                <td className="py-3 px-4 text-slate-500 font-mono text-xs">{p.year}</td>
+                                                                <td className="py-3 px-4 font-medium text-slate-800 text-xs"><span className="bg-slate-100 px-2 py-0.5 rounded font-mono">{safeGn}</span></td>
+                                                                <td className="py-3 px-4 text-slate-900 font-medium">
+                                                                    <div className="line-clamp-2" title={p.name}>{p.name}</div>
+                                                                    {p.contractor && <div className="text-xs text-slate-400 mt-0.5">{p.contractor}</div>}
+                                                                </td>
+                                                                <td className="py-3 px-4 text-right font-semibold text-slate-800 font-mono">{p.allocationMillion}</td>
+                                                                <td className="py-3 px-4 text-center whitespace-nowrap">
+                                                                    <span className={`inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full ${isCompleted ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}`}>
+                                                                        <i className={`fa-solid ${isCompleted ? 'fa-circle-check' : 'fa-clock'}`}></i> {p.status}
+                                                                    </span>
+                                                                </td>
+                                                                <td className="py-3 px-4 text-right font-mono text-xs font-semibold text-slate-800 whitespace-nowrap">Rs. {p.paymentAmount?.toLocaleString()}</td>
+                                                                <td className="py-3 px-4 text-center">
+                                                                    <button onClick={() => setPhotoViewerProject(p)} className="p-1.5 hover:bg-slate-100 text-slate-600 hover:text-emerald-700 rounded-lg"><i className="fa-solid fa-image"></i></button>
+                                                                </td>
+                                                                <td className="py-3 px-4 text-center">
+                                                                    <div className="flex items-center justify-center space-x-1">
+                                                                        <button onClick={() => { setSelectedProject(p); setIsDetailOpen(true); }} className="p-1.5 hover:bg-slate-100 text-slate-600 hover:text-blue-600 rounded-lg"><i className="fa-solid fa-eye"></i></button>
+                                                                        <button onClick={() => handleOpenForm(p)} className="p-1.5 hover:bg-slate-100 text-slate-600 hover:text-amber-600 rounded-lg"><i className="fa-solid fa-pen-to-square"></i></button>
+                                                                        <button onClick={() => handleDeleteProject(p.id)} className="p-1.5 hover:bg-slate-100 text-slate-600 hover:text-rose-600 rounded-lg"><i className="fa-solid fa-trash"></i></button>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        );
+                                                    })
+                                                )}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            )}
+
+                            {}
+                            {viewMode === 'kanban' && (
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="bg-slate-100/70 p-4 rounded-2xl border border-slate-200">
+                                        <h3 className="font-bold text-slate-800 mb-4 flex items-center gap-2"><span className="w-3 h-3 bg-emerald-500 rounded-full"></span> Completed</h3>
+                                        <div className="space-y-3">
+                                            {filteredProjects.filter(p => p.status === "වැඩ අවසන්" || p.status === "Completed").map(p => (
+                                                <div key={p.id} className="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+                                                    <h4 className="font-semibold text-sm mb-2">{p.name}</h4>
+                                                    <div className="text-xs text-slate-500 flex justify-between"><span>{p.gnDivision}</span> <span>Rs. {p.allocationMillion}M</span></div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    <div className="bg-slate-100/70 p-4 rounded-2xl border border-slate-200">
+                                        <h3 className="font-bold text-slate-800 mb-4 flex items-center gap-2"><span className="w-3 h-3 bg-amber-500 rounded-full"></span> In Progress</h3>
+                                        <div className="space-y-3">
+                                            {filteredProjects.filter(p => p.status !== "වැඩ අවසන්" && p.status !== "Completed").map(p => (
+                                                <div key={p.id} className="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+                                                    <h4 className="font-semibold text-sm mb-2">{p.name}</h4>
+                                                    <div className="text-xs text-slate-500 flex justify-between"><span>{p.gnDivision}</span> <span>Rs. {p.allocationMillion}M</span></div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            
+                            {viewMode === 'analytics' && (
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                                        <h3 className="text-base font-bold text-slate-900 mb-4 flex items-center gap-2"><i className="fa-solid fa-chart-column text-emerald-700"></i> Allocation by Program</h3>
+                                        <div className="space-y-4">
+                                            {programOptions.map(prog => {
+                                                const pAlloc = projects.filter(p => p.program === prog).reduce((a, c) => a + c.allocationMillion, 0);
+                                                const perc = stats.totalAlloc > 0 ? ((pAlloc / stats.totalAlloc) * 100).toFixed(1) : 0;
+                                                return (
+                                                    <div key={prog} className="space-y-1">
+                                                        <div className="flex justify-between text-xs font-semibold"><span className="text-slate-700">{prog}</span> <span className="text-slate-900">Rs. {pAlloc.toFixed(2)}M ({perc}%)</span></div>
+                                                        <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden"><div className="bg-emerald-600 h-2.5 rounded-full" style={{ width: `${perc}%` }}></div></div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                                        <h3 className="text-base font-bold text-slate-900 mb-4 flex items-center gap-2"><i className="fa-solid fa-location-dot text-indigo-600"></i> Projects by GN Division</h3>
+                                        <div className="space-y-2">
+                                            {Array.from(new Set(projects.map(p => p.gnDivision))).map(gn => {
+                                                if (!gn) return null;
+                                                const gnProj = projects.filter(p => p.gnDivision === gn);
+                                                return (
+                                                    <div key={gn} className="flex justify-between p-2.5 bg-slate-50 rounded-lg text-sm">
+                                                        <span className="font-semibold text-slate-800">{gn}</span>
+                                                        <span className="text-slate-500">{gnProj.length} Projects</span>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </main>
+
+                        {}
+                        {/* Photo Comparison Modal */}
+                        {photoViewerProject && (
+                            <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
+                                <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full p-6 relative">
+                                    <button onClick={() => setPhotoViewerProject(null)} className="absolute top-4 right-4 bg-slate-100 hover:bg-slate-200 p-2 rounded-full transition"><i className="fa-solid fa-xmark text-slate-700"></i></button>
+                                    <h3 className="text-lg font-bold mb-4 pr-8">{photoViewerProject.name}</h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div>
+                                            <span className="inline-block bg-slate-200 text-xs font-bold px-3 py-1 rounded-full mb-2">BEFORE</span>
+                                            <div className="h-64 bg-slate-100 rounded-xl overflow-hidden flex items-center justify-center border border-slate-200">
+                                                {photoViewerProject.beforePhoto ? <img src={photoViewerProject.beforePhoto} className="w-full h-full object-cover" /> : "No Image"}
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <span className="inline-block bg-emerald-100 text-emerald-800 text-xs font-bold px-3 py-1 rounded-full mb-2">AFTER</span>
+                                            <div className="h-64 bg-slate-100 rounded-xl overflow-hidden flex items-center justify-center border border-slate-200">
+                                                {photoViewerProject.afterPhoto ? <img src={photoViewerProject.afterPhoto} className="w-full h-full object-cover" /> : "Pending"}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                        
+                        {/* Project Detail Modal */}
+                        {isDetailOpen && selectedProject && (
+                            <div className="fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-4 overflow-y-auto">
+                                <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full overflow-hidden my-8">
+                                    <div className="bg-emerald-800 text-white p-5 flex justify-between items-start">
+                                        <h3 className="text-lg font-bold">{selectedProject.name}</h3>
+                                        <button onClick={() => setIsDetailOpen(false)} className="text-emerald-200 hover:text-white"><i className="fa-solid fa-xmark"></i></button>
+                                    </div>
+                                    <div className="p-6 space-y-4">
+                                        <div className="grid grid-cols-2 gap-4 text-sm">
+                                            <div><strong className="text-slate-500 block">GN Division:</strong> {selectedProject.gnDivision}</div>
+                                            <div><strong className="text-slate-500 block">Program:</strong> {selectedProject.program}</div>
+                                            <div><strong className="text-slate-500 block">Contractor:</strong> {selectedProject.contractor}</div>
+                                            <div><strong className="text-slate-500 block">Status:</strong> {selectedProject.status}</div>
+                                            <div><strong className="text-slate-500 block">Allocation:</strong> Rs. {selectedProject.allocationMillion} M</div>
+                                            <div><strong className="text-slate-500 block">Payment Made:</strong> Rs. {selectedProject.paymentAmount?.toLocaleString()}</div>
+                                            <div><strong className="text-slate-500 block">Start Date:</strong> {selectedProject.startDate}</div>
+                                            <div><strong className="text-slate-500 block">Completion:</strong> {selectedProject.actualCompletionDate || "Pending"}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Add/Edit Form Modal */}
+                        {isFormOpen && (
+                            <div className="fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-4 overflow-y-auto">
+                                <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full overflow-hidden border border-slate-100 my-8">
+                                    <div className="bg-slate-900 text-white p-5 flex justify-between items-center">
+                                        <h3 className="text-lg font-bold">{editingProject ? "Edit Project" : "Add New Project"}</h3>
+                                        <button onClick={() => setIsFormOpen(false)} className="text-slate-400 hover:text-white"><i className="fa-solid fa-xmark"></i></button>
+                                    </div>
+                                    <form onSubmit={handleSaveProject} className="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                            <div><label className="block text-xs font-semibold text-slate-700 mb-1">Year</label><input type="text" name="year" defaultValue={editingProject?.year || "2025"} required className="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg text-sm" /></div>
+                                            <div><label className="block text-xs font-semibold text-slate-700 mb-1">GN Division</label><input type="text" name="gnDivision" defaultValue={editingProject?.gnDivision || ""} required className="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg text-sm" /></div>
+                                            <div className="sm:col-span-2"><label className="block text-xs font-semibold text-slate-700 mb-1">Project Name</label><textarea name="name" rows="2" defaultValue={editingProject?.name || ""} required className="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg text-sm" /></div>
+                                            <div>
+                                                <label className="block text-xs font-semibold text-slate-700 mb-1">Program</label>
+                                                <input type="text" name="program" defaultValue={editingProject?.program || "විමධ්‍යගත අයවැය"} className="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg text-sm" />
+                                            </div>
+                                            <div><label className="block text-xs font-semibold text-slate-700 mb-1">Contractor</label><input type="text" name="contractor" defaultValue={editingProject?.contractor || ""} className="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg text-sm" /></div>
+                                            <div><label className="block text-xs font-semibold text-slate-700 mb-1">Allocation (Millions)</label><input type="number" step="0.001" name="allocationMillion" defaultValue={editingProject?.allocationMillion || 0.0} required className="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg text-sm" /></div>
+                                            <div><label className="block text-xs font-semibold text-slate-700 mb-1">Payments Made</label><input type="number" step="0.01" name="paymentAmount" defaultValue={editingProject?.paymentAmount || 0.0} className="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg text-sm" /></div>
+                                            <div><label className="block text-xs font-semibold text-slate-700 mb-1">Status</label>
+                                                <select name="status" defaultValue={editingProject?.status || "වැඩ අවසන්"} className="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg text-sm">
+                                                    <option value="වැඩ අවසන්">වැඩ අවසන් (Completed)</option>
+                                                    <option value="ක්‍රියාත්මක වෙමින් පවතී">ක්‍රියාත්මක වෙමින් පවතී (In Progress)</option>
+                                                    <option value="ප්‍රමාද වී ඇත">ප්‍රමාද වී ඇත (Delayed)</option>
+                                                </select>
+                                            </div>
+                                            <div><label className="block text-xs font-semibold text-slate-700 mb-1">Start Date</label><input type="date" name="startDate" defaultValue={editingProject?.startDate || ""} className="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg text-sm" /></div>
+                                            <div><label className="block text-xs font-semibold text-slate-700 mb-1">Before Photo URL</label><input type="text" name="beforePhoto" defaultValue={editingProject?.beforePhoto || ""} className="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg text-sm" /></div>
+                                            <div><label className="block text-xs font-semibold text-slate-700 mb-1">After Photo URL</label><input type="text" name="afterPhoto" defaultValue={editingProject?.afterPhoto || ""} className="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg text-sm" /></div>
+                                        </div>
+                                        <div className="pt-4 border-t border-slate-200 flex justify-end space-x-3">
+                                            <button type="button" onClick={() => setIsFormOpen(false)} className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg text-sm font-semibold transition">Cancel</button>
+                                            <button type="submit" className="px-5 py-2 bg-emerald-700 hover:bg-emerald-600 text-white rounded-lg text-sm font-semibold shadow-md transition">Save Project</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                );
+            }
+
+            const root = ReactDOM.createRoot(document.getElementById('root'));
+            root.render(<App />);
+        };
+
+        if (window.FirebaseAPI) {
+            startApp();
+        } else {
+            window.addEventListener('FirebaseReady', startApp);
+        }
+    </script>
+</body>
+</html>
