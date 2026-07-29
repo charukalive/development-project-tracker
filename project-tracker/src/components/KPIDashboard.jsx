@@ -15,21 +15,23 @@ const KPIDashboard = ({ projects }) => {
     const today = new Date();
 
     projects.forEach(p => {
-       if (p.status !== 'Completed') {
+       if (p.status !== 'Work Completed') {
            ongoingProjectsCount++;
        } else {
            completedProjectsCount++;
 
-           if (p.endDate && p.retentionPeriodMonths) {
-              const endDate = new Date(p.endDate);
-              const retentionDate = new Date(endDate);
-              retentionDate.setMonth(retentionDate.getMonth() + parseInt(p.retentionPeriodMonths, 10));
+           if (!p.retentionPaid) {
+               if (p.endDate && p.retentionPeriodMonths) {
+                  const endDate = new Date(p.endDate);
+                  const retentionDate = new Date(endDate);
+                  retentionDate.setMonth(retentionDate.getMonth() + parseInt(p.retentionPeriodMonths, 10));
 
-              if (retentionDate <= today) {
+                  if (retentionDate <= today) {
+                      retentionPayableCount++;
+                  }
+               } else {
                   retentionPayableCount++;
-              }
-           } else {
-              retentionPayableCount++;
+               }
            }
        }
     });

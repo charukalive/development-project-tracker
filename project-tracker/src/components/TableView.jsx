@@ -32,8 +32,10 @@ const TableView = ({ projects, onEdit, onViewDetails, onDelete, onPhotoView }) =
                 let daysRemaining = 0;
                 let yearsRemaining = 0;
 
-                if (project.status === 'Completed') {
-                   if (project.endDate && project.retentionPeriodMonths) {
+                if (project.status === 'Work Completed') {
+                   if (project.retentionPaid) {
+                       retentionStatus = "paid";
+                   } else if (project.endDate && project.retentionPeriodMonths) {
                       const endDate = new Date(project.endDate);
                       const retentionDate = new Date(endDate);
                       retentionDate.setMonth(retentionDate.getMonth() + parseInt(project.retentionPeriodMonths, 10));
@@ -61,19 +63,27 @@ const TableView = ({ projects, onEdit, onViewDetails, onDelete, onPhotoView }) =
                 <tr key={project.id} className="hover:bg-slate-50 transition-colors">
                   <td className="p-4">
                     <div className="font-semibold text-slate-800 mb-1">{project.name} {project.year ? `(${project.year})` : ''}</div>
-                    <div className="text-xs text-slate-500 mb-2">{project.gnDivision} • {project.contractor}</div>
-                    <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-100 text-slate-600 mr-2">
+                    <div className="text-xs text-slate-500 mb-2">
+                       {project.gnDivision} • {project.contractor}
+                       {project.projectType && ` • ${t({
+                          "Construction": "construction",
+                          "Purchasing": "purchasing",
+                          "Machine repair": "machineRepair"
+                       }[project.projectType] || project.projectType)}`}
+                    </div>
+                    <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-100 text-slate-600 mr-2 mb-1">
                       {t({
                         "Decentralized Budget": "decentralizedBudget",
                         "Building Rehabilitation": "buildingRehabilitation",
                         "Community Power": "communityPower",
                         "Ministries": "ministries",
                         "Provincial Councils": "provincialCouncils",
+                        "District Development": "districtDevelopment",
                         "Other": "other"
                       }[project.program] || project.program)}
                     </span>
-                    <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
-                      project.status === 'Completed' ? 'bg-emerald-100 text-emerald-700' : 'bg-blue-100 text-blue-700'
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium mb-1 ${
+                      project.status === 'Work Completed' ? 'bg-emerald-100 text-emerald-700' : 'bg-blue-100 text-blue-700'
                     }`}>
                       {t({
                         "Not Approved": "notApproved",
@@ -109,6 +119,11 @@ const TableView = ({ projects, onEdit, onViewDetails, onDelete, onPhotoView }) =
                     {retentionStatus === "ongoing" && (
                        <span className="inline-flex items-center px-2.5 py-1.5 rounded bg-yellow-100 text-yellow-800 text-xs font-medium">
                          {t('ongoing')}
+                       </span>
+                    )}
+                    {retentionStatus === "paid" && (
+                       <span className="inline-flex items-center px-2.5 py-1.5 rounded bg-emerald-100 text-emerald-800 text-xs font-medium border border-emerald-200">
+                         {t('paid')}
                        </span>
                     )}
                     {retentionStatus === "payable" && (

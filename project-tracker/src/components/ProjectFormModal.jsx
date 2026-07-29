@@ -35,6 +35,7 @@ const ProjectFormModal = ({ isOpen, onClose, onSave, editingProject }) => {
         name: formData.get('name'),
         gnDivision: formData.get('gnDivision'),
         program: formData.get('program'),
+        projectType: formData.get('projectType'),
         status: formData.get('status'),
         year: formData.get('year'),
         allocation: parseFloat(formData.get('allocation')) || 0,
@@ -43,6 +44,7 @@ const ProjectFormModal = ({ isOpen, onClose, onSave, editingProject }) => {
         financialProgress: formData.get('financialProgress'),
         retentionAmount: parseFloat(formData.get('retentionAmount')) || 0,
         retentionPeriodMonths: formData.get('retentionPeriodMonths'),
+        retentionPaid: formData.get('retentionPaid') === 'on',
         specialRemarks: formData.get('specialRemarks'),
         startDate: formData.get('startDate'),
         endDate: formData.get('endDate') || null,
@@ -98,7 +100,17 @@ const ProjectFormModal = ({ isOpen, onClose, onSave, editingProject }) => {
                 <option value="Community Power">{t('communityPower')}</option>
                 <option value="Ministries">{t('ministries')}</option>
                 <option value="Provincial Councils">{t('provincialCouncils')}</option>
+                <option value="District Development">{t('districtDevelopment')}</option>
                 <option value="Other">{t('other')}</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">{t('projectType')}</label>
+              <select name="projectType" defaultValue={editingProject?.projectType || 'Construction'} className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white">
+                <option value="Construction">{t('construction')}</option>
+                <option value="Purchasing">{t('purchasing')}</option>
+                <option value="Machine repair">{t('machineRepair')}</option>
               </select>
             </div>
 
@@ -115,7 +127,6 @@ const ProjectFormModal = ({ isOpen, onClose, onSave, editingProject }) => {
                 <option value="Physical Progress 51-75%">{t('physical51to75')}</option>
                 <option value="Physical Progress 76-99%">{t('physical76to99')}</option>
                 <option value="Work Completed">{t('workCompleted')}</option>
-                <option value="Completed">{t('completed')}</option>
               </select>
             </div>
 
@@ -142,6 +153,11 @@ const ProjectFormModal = ({ isOpen, onClose, onSave, editingProject }) => {
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">{t('retentionPeriodMonths')}</label>
               <input name="retentionPeriodMonths" defaultValue={editingProject?.retentionPeriodMonths} type="number" min="0" className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+            </div>
+
+            <div className="flex items-center mt-6">
+              <input type="checkbox" id="retentionPaid" name="retentionPaid" defaultChecked={editingProject?.retentionPaid} className="w-4 h-4 text-emerald-600 bg-gray-100 border-gray-300 rounded focus:ring-emerald-500" />
+              <label htmlFor="retentionPaid" className="ml-2 text-sm font-medium text-gray-900">{t('retentionPaid')}</label>
             </div>
 
             <div>

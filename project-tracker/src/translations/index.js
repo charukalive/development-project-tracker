@@ -1,6 +1,6 @@
 export const translations = {
   en: {
-    appTitle: "Regional Development Project Tracker",
+    appTitle: "Galnewa Divisional Secretariat - Development Project Management",
     language: "Language",
     // Navigation
     tableView: "Table View",
@@ -49,7 +49,13 @@ export const translations = {
     communityPower: "Community Power",
     ministries: "Ministries",
     provincialCouncils: "Provincial Councils",
+    districtDevelopment: "District Development",
     other: "Other",
+    // Project Types
+    projectType: "Project Type",
+    construction: "Construction",
+    purchasing: "Purchasing",
+    machineRepair: "Machine repair",
     // Form
     editProject: "Edit Project",
     projectName: "Project Name",
@@ -63,6 +69,7 @@ export const translations = {
     financialProgress: "Financial Progress",
     retentionAmount: "Retention Amount",
     retentionPeriodMonths: "Retention Period (Months)",
+    retentionPaid: "Retention Paid",
     specialRemarks: "Special / Remarks",
     startDate: "Start Date",
     endDate: "End Date",
@@ -83,10 +90,11 @@ export const translations = {
     months: "months",
     remaining: "remaining",
     payable: "Payable",
+    paid: "Paid",
     ago: "ago"
   },
   si: {
-    appTitle: "ප්‍රාදේශීය ව්‍යාපෘති කළමනාකරණ පද්ධතිය",
+    appTitle: "ගල්නෑව ප්‍රාදේශීය ලේකම් කාර්යාලය සංවර්ධන ව්‍යාපෘති කළමනාකරණය",
     language: "භාෂාව",
     tableView: "වගු දසුන",
     kanbanView: "කාන්බන් දසුන",
@@ -130,7 +138,13 @@ export const translations = {
     communityPower: "ප්‍රජාශක්ති",
     ministries: "අමාත්‍යාංශ",
     provincialCouncils: "පලාත් සභා",
+    districtDevelopment: "දිස්ත්‍රික් සංවර්ධන",
     other: "වෙනත්",
+    // Project Types
+    projectType: "ව්‍යාපෘති වර්ගය",
+    construction: "ඉදිකිරීම්",
+    purchasing: "මිලදී ගැනීම්",
+    machineRepair: "යන්ත්‍රෝපකරණ අලුත්වැඩියාව",
     editProject: "ව්‍යාපෘතිය සංස්කරණය",
     projectName: "ව්‍යාපෘතියේ නම",
     gnDivision: "ග්‍රාම නිලධාරී වසම",
@@ -143,6 +157,7 @@ export const translations = {
     financialProgress: "මූල්‍ය ප්‍රගතිය",
     retentionAmount: "අතරැදවුම් මුදල",
     retentionPeriodMonths: "අතරැදවුම් කාලය (මාස)",
+    retentionPaid: "අතරැදවුම් ගෙවා ඇත",
     specialRemarks: "විශේෂ",
     startDate: "ආරම්භක දිනය",
     endDate: "අවසන් දිනය",
@@ -161,10 +176,11 @@ export const translations = {
     months: "මාස",
     remaining: "ඉතිරි",
     payable: "ගෙවීමට සුදුසුයි",
+    paid: "ගෙවා ඇත",
     ago: "පෙර"
   },
   ta: {
-    appTitle: "பிராந்திய அபிவிருத்தி திட்ட முகாமைத்துவ அமைப்பு",
+    appTitle: "கல்லெவ பிரதேச செயலகம் - அபிவிருத்தி திட்ட முகாமைத்துவம்",
     language: "மொழி",
     tableView: "அட்டவணை காட்சி",
     kanbanView: "கான்பன் காட்சி",
@@ -208,7 +224,12 @@ export const translations = {
     communityPower: "சமூக சக்தி",
     ministries: "அமைச்சுகள்",
     provincialCouncils: "மாகாண சபைகள்",
+    districtDevelopment: "மாவட்ட அபிவிருத்தி",
     other: "மற்றவை",
+    projectType: "திட்ட வகை",
+    construction: "கட்டுமானம்",
+    purchasing: "கொள்முதல்",
+    machineRepair: "இயந்திர திருத்தம்",
     editProject: "திட்டத்தை திருத்து",
     projectName: "திட்டத்தின் பெயர்",
     gnDivision: "கிராம சேவகர் பிரிவு",
@@ -221,6 +242,7 @@ export const translations = {
     financialProgress: "நிதி முன்னேற்றம்",
     retentionAmount: "தக்கவைப்பு தொகை",
     retentionPeriodMonths: "தக்கவைப்பு காலம் (மாதங்கள்)",
+    retentionPaid: "தக்கவைப்பு செலுத்தப்பட்டது",
     specialRemarks: "சிறப்பு / குறிப்புகள்",
     startDate: "ஆரம்ப தேதி",
     endDate: "முடிவு தேதி",
@@ -239,6 +261,7 @@ export const translations = {
     months: "மாதங்கள்",
     remaining: "மீதமுள்ளது",
     payable: "செலுத்த வேண்டியவை",
+    paid: "செலுத்தப்பட்டது",
     ago: "முன்பு"
   }
 };

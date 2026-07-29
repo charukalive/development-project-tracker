@@ -49,7 +49,7 @@ const AppContent = () => {
 
       let matchesRetention = true;
       if (selectedRetentionFilter !== 'All') {
-        if (p.status === 'Completed' && p.endDate && p.retentionPeriodMonths) {
+        if (p.status === 'Work Completed' && p.endDate && p.retentionPeriodMonths && !p.retentionPaid) {
           const endDate = new Date(p.endDate);
           const retentionDate = new Date(endDate);
           retentionDate.setMonth(retentionDate.getMonth() + parseInt(p.retentionPeriodMonths, 10));
@@ -149,7 +149,7 @@ const AppContent = () => {
           </div>
         ) : (
           <>
-            <KPIDashboard projects={projects} />
+            <KPIDashboard projects={filteredProjects} />
 
             <FilterBar
               searchTerm={searchTerm}

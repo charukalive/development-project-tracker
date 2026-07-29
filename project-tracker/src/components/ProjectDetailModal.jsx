@@ -36,14 +36,25 @@ const ProjectDetailModal = ({ isOpen, onClose, project }) => {
                   "Community Power": "communityPower",
                   "Ministries": "ministries",
                   "Provincial Councils": "provincialCouncils",
+                  "District Development": "districtDevelopment",
                   "Other": "other"
                 }[project.program] || project.program)}
               </span>
             </div>
             <div>
+              <p className="text-sm text-slate-500 mb-1">{t('projectType')}</p>
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-800">
+                {t({
+                  "Construction": "construction",
+                  "Purchasing": "purchasing",
+                  "Machine repair": "machineRepair"
+                }[project.projectType] || project.projectType || 'Construction')}
+              </span>
+            </div>
+            <div>
               <p className="text-sm text-slate-500 mb-1">{t('status')}</p>
               <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                project.status === 'Completed' ? 'bg-emerald-100 text-emerald-800' : 'bg-blue-100 text-blue-800'
+                project.status === 'Work Completed' ? 'bg-emerald-100 text-emerald-800' : 'bg-blue-100 text-blue-800'
               }`}>
                 {t({
                   "Not Approved": "notApproved",
@@ -86,7 +97,10 @@ const ProjectDetailModal = ({ isOpen, onClose, project }) => {
             </div>
             <div>
               <p className="text-sm text-slate-500 mb-1">{t('retentionPeriodMonths')}</p>
-              <p className="font-medium text-slate-800">{project.retentionPeriodMonths || '-'}</p>
+              <p className="font-medium text-slate-800">
+                {project.retentionPeriodMonths || '-'}
+                {project.retentionPaid ? <span className="ml-2 text-xs text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">({t('paid')})</span> : ''}
+              </p>
             </div>
             <div className="col-span-2">
               <p className="text-sm text-slate-500 mb-1">{t('specialRemarks')}</p>
