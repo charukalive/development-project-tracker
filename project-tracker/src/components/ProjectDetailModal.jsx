@@ -24,9 +24,20 @@ const ProjectDetailModal = ({ isOpen, onClose, project }) => {
               <p className="font-medium text-slate-800">{project.gnDivision}</p>
             </div>
             <div>
+              <p className="text-sm text-slate-500 mb-1">{t('year')}</p>
+              <p className="font-medium text-slate-800">{project.year || '-'}</p>
+            </div>
+            <div>
               <p className="text-sm text-slate-500 mb-1">{t('program')}</p>
               <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-800">
-                {project.program}
+                {t({
+                  "Decentralized Budget": "decentralizedBudget",
+                  "Building Rehabilitation": "buildingRehabilitation",
+                  "Community Power": "communityPower",
+                  "Ministries": "ministries",
+                  "Provincial Councils": "provincialCouncils",
+                  "Other": "other"
+                }[project.program] || project.program)}
               </span>
             </div>
             <div>
@@ -34,7 +45,20 @@ const ProjectDetailModal = ({ isOpen, onClose, project }) => {
               <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                 project.status === 'Completed' ? 'bg-emerald-100 text-emerald-800' : 'bg-blue-100 text-blue-800'
               }`}>
-                {t(project.status === 'Completed' ? 'completed' : 'inProgress')}
+                {t({
+                  "Not Approved": "notApproved",
+                  "Approved": "approved",
+                  "Estimating": "estimating",
+                  "Procurement": "procurement",
+                  "Contracted": "contracted",
+                  "Physical Progress 0-25%": "physical0to25",
+                  "Physical Progress 26-50%": "physical26to50",
+                  "Physical Progress 51-75%": "physical51to75",
+                  "Physical Progress 76-99%": "physical76to99",
+                  "Work Completed": "workCompleted",
+                  "Completed": "completed",
+                  "In Progress": "inProgress"
+                }[project.status] || project.status)}
               </span>
             </div>
             <div>
@@ -51,6 +75,22 @@ const ProjectDetailModal = ({ isOpen, onClose, project }) => {
             <div>
               <p className="text-sm text-slate-500 mb-1">{t('disbursed')}</p>
               <p className="font-mono text-lg text-emerald-600">{Number(project.disbursed).toFixed(2)}</p>
+            </div>
+            <div>
+              <p className="text-sm text-slate-500 mb-1">{t('financialProgress')}</p>
+              <p className="font-medium text-slate-800">{project.financialProgress || '-'}</p>
+            </div>
+            <div>
+              <p className="text-sm text-slate-500 mb-1">{t('retentionAmount')}</p>
+              <p className="font-mono text-lg text-slate-800">{project.retentionAmount != null ? Number(project.retentionAmount).toFixed(2) : '-'}</p>
+            </div>
+            <div>
+              <p className="text-sm text-slate-500 mb-1">{t('retentionPeriodMonths')}</p>
+              <p className="font-medium text-slate-800">{project.retentionPeriodMonths || '-'}</p>
+            </div>
+            <div className="col-span-2">
+              <p className="text-sm text-slate-500 mb-1">{t('specialRemarks')}</p>
+              <p className="font-medium text-slate-800">{project.specialRemarks || '-'}</p>
             </div>
           </div>
 

@@ -19,6 +19,8 @@ const AppContent = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedProgram, setSelectedProgram] = useState('All');
   const [selectedStatus, setSelectedStatus] = useState('All');
+  const [selectedYear, setSelectedYear] = useState('All');
+  const [selectedRetentionFilter, setSelectedRetentionFilter] = useState('All');
 
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
@@ -29,18 +31,45 @@ const AppContent = () => {
 
   const programOptions = useMemo(() => [...new Set(projects.map(p => p.program))], [projects]);
   const statusOptions = useMemo(() => [...new Set(projects.map(p => p.status))], [projects]);
+  const yearOptions = useMemo(() => {
+    const years = new Set(projects.map(p => p.year).filter(y => y));
+    return [...years].sort((a, b) => String(b).localeCompare(String(a))); // Sort descending safely
+  }, [projects]);
 
   const filteredProjects = useMemo(() => {
+    const today = new Date();
+
     return projects.filter(p => {
       const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                             p.gnDivision.toLowerCase().includes(searchTerm.toLowerCase()) ||
                             (p.contractor && p.contractor.toLowerCase().includes(searchTerm.toLowerCase()));
       const matchesProgram = selectedProgram === 'All' || p.program === selectedProgram;
       const matchesStatus = selectedStatus === 'All' || p.status === selectedStatus;
+      const matchesYear = selectedYear === 'All' || p.year === selectedYear;
 
-      return matchesSearch && matchesProgram && matchesStatus;
+      let matchesRetention = true;
+      if (selectedRetentionFilter !== 'All') {
+        if (p.status === 'Completed' && p.endDate && p.retentionPeriodMonths) {
+          const endDate = new Date(p.endDate);
+          const retentionDate = new Date(endDate);
+          retentionDate.setMonth(retentionDate.getMonth() + parseInt(p.retentionPeriodMonths, 10));
+
+          const timeDiff = retentionDate.getTime() - today.getTime();
+          const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+
+          if (selectedRetentionFilter === 'Exceeded') {
+            matchesRetention = daysDiff < 0;
+          } else if (selectedRetentionFilter === 'PassingSoon') {
+            matchesRetention = daysDiff >= 0 && daysDiff <= 60; // Approx 2 months
+          }
+        } else {
+          matchesRetention = false; // Only completed projects with end date and retention period can match these filters
+        }
+      }
+
+      return matchesSearch && matchesProgram && matchesStatus && matchesYear && matchesRetention;
     });
-  }, [projects, searchTerm, selectedProgram, selectedStatus]);
+  }, [projects, searchTerm, selectedProgram, selectedStatus, selectedYear, selectedRetentionFilter]);
 
   const handleOpenAdd = () => {
     setEditingProject(null);
@@ -123,17 +152,22 @@ const AppContent = () => {
             <KPIDashboard projects={projects} />
 
             <FilterBar
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-          selectedProgram={selectedProgram}
-          setSelectedProgram={setSelectedProgram}
-          selectedStatus={selectedStatus}
-          setSelectedStatus={setSelectedStatus}
-          programOptions={programOptions}
-          statusOptions={statusOptions}
-          onAddProject={handleOpenAdd}
-          filteredProjects={filteredProjects}
-        />
+              searchTerm={searchTerm}
+              setSearchTerm={setSearchTerm}
+              selectedProgram={selectedProgram}
+              setSelectedProgram={setSelectedProgram}
+              selectedStatus={selectedStatus}
+              setSelectedStatus={setSelectedStatus}
+              selectedYear={selectedYear}
+              setSelectedYear={setSelectedYear}
+              selectedRetentionFilter={selectedRetentionFilter}
+              setSelectedRetentionFilter={setSelectedRetentionFilter}
+              programOptions={programOptions}
+              statusOptions={statusOptions}
+              yearOptions={yearOptions}
+              onAddProject={handleOpenAdd}
+              filteredProjects={filteredProjects}
+            />
 
             {/* View Rendering */}
             <div className="transition-all duration-300 ease-in-out">

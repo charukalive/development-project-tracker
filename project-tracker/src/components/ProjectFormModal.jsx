@@ -36,9 +36,14 @@ const ProjectFormModal = ({ isOpen, onClose, onSave, editingProject }) => {
         gnDivision: formData.get('gnDivision'),
         program: formData.get('program'),
         status: formData.get('status'),
+        year: formData.get('year'),
         allocation: parseFloat(formData.get('allocation')) || 0,
         disbursed: parseFloat(formData.get('disbursed')) || 0,
         contractor: formData.get('contractor'),
+        financialProgress: formData.get('financialProgress'),
+        retentionAmount: parseFloat(formData.get('retentionAmount')) || 0,
+        retentionPeriodMonths: formData.get('retentionPeriodMonths'),
+        specialRemarks: formData.get('specialRemarks'),
         startDate: formData.get('startDate'),
         endDate: formData.get('endDate') || null,
         beforeImage: beforeImageURL,
@@ -81,19 +86,35 @@ const ProjectFormModal = ({ isOpen, onClose, onSave, editingProject }) => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">{t('contractor')}</label>
-              <input name="contractor" defaultValue={editingProject?.contractor} type="text" className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+              <label className="block text-sm font-medium text-slate-700 mb-1">{t('year')}</label>
+              <input name="year" defaultValue={editingProject?.year} type="text" className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">{t('program')} *</label>
-              <input required name="program" defaultValue={editingProject?.program} type="text" className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+              <select name="program" required defaultValue={editingProject?.program || 'Decentralized Budget'} className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white">
+                <option value="Decentralized Budget">{t('decentralizedBudget')}</option>
+                <option value="Building Rehabilitation">{t('buildingRehabilitation')}</option>
+                <option value="Community Power">{t('communityPower')}</option>
+                <option value="Ministries">{t('ministries')}</option>
+                <option value="Provincial Councils">{t('provincialCouncils')}</option>
+                <option value="Other">{t('other')}</option>
+              </select>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">{t('status')} *</label>
-              <select name="status" defaultValue={editingProject?.status || 'In Progress'} className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white">
-                <option value="In Progress">{t('inProgress')}</option>
+              <select name="status" defaultValue={editingProject?.status || 'Not Approved'} className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white">
+                <option value="Not Approved">{t('notApproved')}</option>
+                <option value="Approved">{t('approved')}</option>
+                <option value="Estimating">{t('estimating')}</option>
+                <option value="Procurement">{t('procurement')}</option>
+                <option value="Contracted">{t('contracted')}</option>
+                <option value="Physical Progress 0-25%">{t('physical0to25')}</option>
+                <option value="Physical Progress 26-50%">{t('physical26to50')}</option>
+                <option value="Physical Progress 51-75%">{t('physical51to75')}</option>
+                <option value="Physical Progress 76-99%">{t('physical76to99')}</option>
+                <option value="Work Completed">{t('workCompleted')}</option>
                 <option value="Completed">{t('completed')}</option>
               </select>
             </div>
@@ -106,6 +127,31 @@ const ProjectFormModal = ({ isOpen, onClose, onSave, editingProject }) => {
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">{t('disbursed')} *</label>
               <input required name="disbursed" defaultValue={editingProject?.disbursed} type="number" step="0.01" min="0" className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">{t('financialProgress')}</label>
+              <input name="financialProgress" defaultValue={editingProject?.financialProgress} type="text" className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">{t('retentionAmount')}</label>
+              <input name="retentionAmount" defaultValue={editingProject?.retentionAmount} type="number" step="0.01" min="0" className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">{t('retentionPeriodMonths')}</label>
+              <input name="retentionPeriodMonths" defaultValue={editingProject?.retentionPeriodMonths} type="number" min="0" className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">{t('contractor')}</label>
+              <input name="contractor" defaultValue={editingProject?.contractor} type="text" className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+            </div>
+
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-slate-700 mb-1">{t('specialRemarks')}</label>
+              <textarea name="specialRemarks" defaultValue={editingProject?.specialRemarks} rows="2" className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"></textarea>
             </div>
 
             <div>
