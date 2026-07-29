@@ -61,9 +61,11 @@ const TableView = ({ projects, onEdit, onViewDetails, onDelete, onPhotoView }) =
 
                 return (
                 <tr key={project.id} className="hover:bg-slate-50 transition-colors">
-                  <td className="p-4">
-                    <div className="font-semibold text-slate-800 mb-1">{project.name} {project.year ? `(${project.year})` : ''}</div>
-                    <div className="text-xs text-slate-500 mb-2">
+                  <td className="p-4 max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg">
+                    <div className="font-semibold text-slate-800 mb-1 line-clamp-2" title={project.name}>
+                      {project.name} {project.year ? `(${project.year})` : ''}
+                    </div>
+                    <div className="text-xs text-slate-500 mb-2 truncate" title={`${project.gnDivision} • ${project.contractor}`}>
                        {project.gnDivision} • {project.contractor}
                        {project.projectType && ` • ${t({
                           "Construction": "construction",
