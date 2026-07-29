@@ -1,6 +1,19 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { Edit2, Eye, Trash2, Image as ImageIcon } from 'lucide-react';
+
+const ExpandableText = ({ text, subText }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  return (
+    <div
+      className={`font-semibold text-slate-800 mb-1 cursor-pointer ${isExpanded ? '' : 'line-clamp-2'}`}
+      onClick={() => setIsExpanded(!isExpanded)}
+      title={isExpanded ? "Click to collapse" : "Click to expand"}
+    >
+      {text} {subText ? `(${subText})` : ''}
+    </div>
+  );
+};
 
 const TableView = ({ projects, onEdit, onViewDetails, onDelete, onPhotoView }) => {
   const { t } = useLanguage();
@@ -62,9 +75,7 @@ const TableView = ({ projects, onEdit, onViewDetails, onDelete, onPhotoView }) =
                 return (
                 <tr key={project.id} className="hover:bg-slate-50 transition-colors">
                   <td className="p-4 max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg">
-                    <div className="font-semibold text-slate-800 mb-1 line-clamp-2" title={project.name}>
-                      {project.name} {project.year ? `(${project.year})` : ''}
-                    </div>
+                    <ExpandableText text={project.name} subText={project.year} />
                     <div className="text-xs text-slate-500 mb-2 truncate" title={`${project.gnDivision} • ${project.contractor}`}>
                        {project.gnDivision} • {project.contractor}
                        {project.projectType && ` • ${t({

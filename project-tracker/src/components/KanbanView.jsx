@@ -1,15 +1,28 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { Image as ImageIcon, Eye, Edit2 } from 'lucide-react';
+
+const ExpandableText = ({ text }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  return (
+    <h4
+      className={`font-semibold text-slate-800 text-sm leading-tight cursor-pointer ${isExpanded ? '' : 'line-clamp-2'}`}
+      onClick={() => setIsExpanded(!isExpanded)}
+      title={isExpanded ? "Click to collapse" : "Click to expand"}
+    >
+      {text}
+    </h4>
+  );
+};
 
 const KanbanCard = ({ project, onEdit, onViewDetails, onPhotoView }) => {
   const utilization = project.allocation > 0 ? (project.disbursed / project.allocation) * 100 : 0;
 
   return (
     <div className="bg-white p-4 rounded-lg shadow-sm border border-slate-200 mb-3 hover:shadow-md transition-shadow">
-      <div className="flex justify-between items-start mb-2">
-        <h4 className="font-semibold text-slate-800 text-sm leading-tight">{project.name}</h4>
-        <div className="flex space-x-1">
+      <div className="flex justify-between items-start mb-2 gap-2">
+        <ExpandableText text={project.name} />
+        <div className="flex space-x-1 shrink-0">
            {(project.beforeImage || project.afterImage) && (
               <button onClick={() => onPhotoView(project)} className="text-slate-400 hover:text-purple-600 transition-colors">
                 <ImageIcon size={14} />

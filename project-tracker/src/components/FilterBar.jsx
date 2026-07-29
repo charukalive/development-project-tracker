@@ -61,6 +61,7 @@ const FilterBar = ({
                 "Community Power": "communityPower",
                 "Ministries": "ministries",
                 "Provincial Councils": "provincialCouncils",
+                "District Development": "districtDevelopment",
                 "Other": "other"
             };
             return <option key={p} value={p}>{t(programMap[p] || p)}</option>;
