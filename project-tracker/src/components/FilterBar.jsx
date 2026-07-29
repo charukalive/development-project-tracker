@@ -10,8 +10,13 @@ const FilterBar = ({
   setSelectedProgram,
   selectedStatus,
   setSelectedStatus,
+  selectedYear,
+  setSelectedYear,
+  selectedRetentionFilter,
+  setSelectedRetentionFilter,
   programOptions,
   statusOptions,
+  yearOptions,
   onAddProject,
   filteredProjects
 }) => {
@@ -33,14 +38,33 @@ const FilterBar = ({
         />
       </div>
 
-      <div className="flex w-full md:w-auto gap-4">
+      <div className="flex w-full md:w-auto gap-2 flex-wrap md:flex-nowrap">
+        <select
+          className="block w-full md:w-32 py-2 px-3 border border-slate-200 bg-white rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          value={selectedYear}
+          onChange={(e) => setSelectedYear(e.target.value)}
+        >
+          <option value="All">{t('allYears')}</option>
+          {yearOptions.map(y => <option key={y} value={y}>{y}</option>)}
+        </select>
+
         <select
           className="block w-full md:w-40 py-2 px-3 border border-slate-200 bg-white rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
           value={selectedProgram}
           onChange={(e) => setSelectedProgram(e.target.value)}
         >
           <option value="All">{t('allPrograms')}</option>
-          {programOptions.map(p => <option key={p} value={p}>{p}</option>)}
+          {programOptions.map(p => {
+            const programMap = {
+                "Decentralized Budget": "decentralizedBudget",
+                "Building Rehabilitation": "buildingRehabilitation",
+                "Community Power": "communityPower",
+                "Ministries": "ministries",
+                "Provincial Councils": "provincialCouncils",
+                "Other": "other"
+            };
+            return <option key={p} value={p}>{t(programMap[p] || p)}</option>;
+          })}
         </select>
 
         <select
@@ -49,7 +73,34 @@ const FilterBar = ({
           onChange={(e) => setSelectedStatus(e.target.value)}
         >
           <option value="All">{t('allStatuses')}</option>
-          {statusOptions.map(s => <option key={s} value={s}>{t(s === 'Completed' ? 'completed' : 'inProgress')}</option>)}
+          {statusOptions.map(s => {
+             // Map standard status strings to their translation keys
+             const statusMap = {
+                "Not Approved": "notApproved",
+                "Approved": "approved",
+                "Estimating": "estimating",
+                "Procurement": "procurement",
+                "Contracted": "contracted",
+                "Physical Progress 0-25%": "physical0to25",
+                "Physical Progress 26-50%": "physical26to50",
+                "Physical Progress 51-75%": "physical51to75",
+                "Physical Progress 76-99%": "physical76to99",
+                "Work Completed": "workCompleted",
+                "Completed": "completed",
+                "In Progress": "inProgress"
+             };
+             return <option key={s} value={s}>{t(statusMap[s] || s)}</option>;
+          })}
+        </select>
+
+        <select
+          className="block w-full md:w-40 py-2 px-3 border border-slate-200 bg-white rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          value={selectedRetentionFilter}
+          onChange={(e) => setSelectedRetentionFilter(e.target.value)}
+        >
+          <option value="All">{t('allRetentions')}</option>
+          <option value="Exceeded">{t('retentionExceeded')}</option>
+          <option value="PassingSoon">{t('retentionPassingSoon')}</option>
         </select>
       </div>
 
