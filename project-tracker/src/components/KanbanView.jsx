@@ -4,7 +4,7 @@ import { Image as ImageIcon, Eye, Edit2 } from 'lucide-react';
 
 const ExpandableText = ({ text }) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const maxLength = 40;
+  const maxLength = 100;
   const shouldTruncate = text && text.length > maxLength;
 
   const displayText = (!isExpanded && shouldTruncate)

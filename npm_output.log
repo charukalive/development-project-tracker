@@ -10,3 +10,5 @@ Port 5175 is in use, trying another one...
 
   ➜  Local:   http://localhost:5176/
   ➜  Network: use --host to expose
+3:32:04 AM [vite] (client) hmr update /src/components/TableView.jsx, /src/index.css
+3:33:00 AM [vite] (client) hmr update /src/components/KanbanView.jsx, /src/index.css
