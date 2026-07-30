@@ -4,13 +4,21 @@ import { Edit2, Eye, Trash2, Image as ImageIcon } from 'lucide-react';
 
 const ExpandableText = ({ text, subText }) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const fullText = `${text}${subText ? ` (${subText})` : ''}`;
+  const maxLength = 40;
+  const shouldTruncate = fullText.length > maxLength;
+
+  const displayText = (!isExpanded && shouldTruncate)
+    ? `${fullText.substring(0, maxLength)}...`
+    : fullText;
+
   return (
     <div
-      className={`font-semibold text-slate-800 mb-1 cursor-pointer ${isExpanded ? '' : 'line-clamp-2'}`}
+      className="font-semibold text-slate-800 mb-1 cursor-pointer"
       onClick={() => setIsExpanded(!isExpanded)}
       title={isExpanded ? "Click to collapse" : "Click to expand"}
     >
-      {text} {subText ? `(${subText})` : ''}
+      {displayText}
     </div>
   );
 };
