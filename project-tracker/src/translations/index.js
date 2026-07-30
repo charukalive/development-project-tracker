@@ -83,7 +83,9 @@ export const translations = {
     months: "months",
     remaining: "remaining",
     payable: "Payable",
-    ago: "ago"
+    ago: "ago",
+    showMore: "more...",
+    showLess: "less"
   },
   si: {
     appTitle: "ප්‍රාදේශීය ව්‍යාපෘති කළමනාකරණ පද්ධතිය",
@@ -161,7 +163,9 @@ export const translations = {
     months: "මාස",
     remaining: "ඉතිරි",
     payable: "ගෙවීමට සුදුසුයි",
-    ago: "පෙර"
+    ago: "පෙර",
+    showMore: "තවත්...",
+    showLess: "අඩු කරන්න"
   },
   ta: {
     appTitle: "பிராந்திய அபிவிருத்தி திட்ட முகாமைத்துவ அமைப்பு",
@@ -239,6 +243,8 @@ export const translations = {
     months: "மாதங்கள்",
     remaining: "மீதமுள்ளது",
     payable: "செலுத்த வேண்டியவை",
-    ago: "முன்பு"
+    ago: "முன்பு",
+    showMore: "மேலும்...",
+    showLess: "குறைவாக"
   }
 };

@@ -1,6 +1,7 @@
 import React from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { Edit2, Eye, Trash2, Image as ImageIcon } from 'lucide-react';
+import ExpandableText from './ExpandableText';
 
 const TableView = ({ projects, onEdit, onViewDetails, onDelete, onPhotoView }) => {
   const { t } = useLanguage();
@@ -59,8 +60,10 @@ const TableView = ({ projects, onEdit, onViewDetails, onDelete, onPhotoView }) =
 
                 return (
                 <tr key={project.id} className="hover:bg-slate-50 transition-colors">
-                  <td className="p-4">
-                    <div className="font-semibold text-slate-800 mb-1">{project.name} {project.year ? `(${project.year})` : ''}</div>
+                  <td className="p-4 max-w-md">
+                    <div className="font-semibold text-slate-800 mb-1 leading-snug">
+                      <ExpandableText text={project.name} year={project.year} maxLength={80} />
+                    </div>
                     <div className="text-xs text-slate-500 mb-2">{project.gnDivision} • {project.contractor}</div>
                     <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-100 text-slate-600 mr-2">
                       {t({
