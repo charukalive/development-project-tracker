@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { useLanguage } from '../context/LanguageContext';
-import { Briefcase, DollarSign, CheckCircle2, Clock, Hourglass } from 'lucide-react';
+import { Briefcase, DollarSign, CheckCircle2, Hourglass } from 'lucide-react';
 
 const KPIDashboard = ({ projects }) => {
   const { t } = useLanguage();
