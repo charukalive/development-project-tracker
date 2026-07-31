@@ -31,10 +31,16 @@ export const useProjects = () => {
 
     // Listen to real-time updates
     const unsubscribe = onSnapshot(projectsRef, (snapshot) => {
-      const projectsData = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
+      const projectsData = snapshot.docs.map(doc => {
+        const data = doc.data();
+        if (data && data.status === 'Work Completed') {
+          data.status = 'Completed';
+        }
+        return {
+          id: doc.id,
+          ...data
+        };
+      });
       setProjects(projectsData);
       setLoading(false);
     }, (error) => {

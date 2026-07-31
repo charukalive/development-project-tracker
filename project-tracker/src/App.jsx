@@ -9,7 +9,7 @@ import AnalyticsView from './components/AnalyticsView';
 import ProjectFormModal from './components/ProjectFormModal';
 import ProjectDetailModal from './components/ProjectDetailModal';
 import PhotoViewerModal from './components/PhotoViewerModal';
-import { LayoutGrid, TableProperties, BarChart3, Globe } from 'lucide-react';
+import { LayoutGrid, TableProperties, BarChart3, Globe, Landmark } from 'lucide-react';
 
 const AppContent = () => {
   const { t, language, setLanguage } = useLanguage();
@@ -21,6 +21,7 @@ const AppContent = () => {
   const [selectedStatus, setSelectedStatus] = useState('All');
   const [selectedYear, setSelectedYear] = useState('All');
   const [selectedRetentionFilter, setSelectedRetentionFilter] = useState('All');
+  const [selectedProjectType, setSelectedProjectType] = useState('All');
 
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
@@ -35,6 +36,13 @@ const AppContent = () => {
     const years = new Set(projects.map(p => p.year).filter(y => y));
     return [...years].sort((a, b) => String(b).localeCompare(String(a))); // Sort descending safely
   }, [projects]);
+  const projectTypeOptions = useMemo(() => {
+    const types = new Set(projects.map(p => p.projectType).filter(Boolean));
+    types.add("Construction");
+    types.add("Purchasing");
+    types.add("Machine repair");
+    return [...types];
+  }, [projects]);
 
   const filteredProjects = useMemo(() => {
     const today = new Date();
@@ -46,6 +54,9 @@ const AppContent = () => {
       const matchesProgram = selectedProgram === 'All' || p.program === selectedProgram;
       const matchesStatus = selectedStatus === 'All' || p.status === selectedStatus;
       const matchesYear = selectedYear === 'All' || p.year === selectedYear;
+
+      const projectType = p.projectType || 'Construction';
+      const matchesProjectType = selectedProjectType === 'All' || projectType === selectedProjectType;
 
       let matchesRetention = true;
       if (selectedRetentionFilter !== 'All') {
@@ -67,9 +78,9 @@ const AppContent = () => {
         }
       }
 
-      return matchesSearch && matchesProgram && matchesStatus && matchesYear && matchesRetention;
+      return matchesSearch && matchesProgram && matchesStatus && matchesYear && matchesRetention && matchesProjectType;
     });
-  }, [projects, searchTerm, selectedProgram, selectedStatus, selectedYear, selectedRetentionFilter]);
+  }, [projects, searchTerm, selectedProgram, selectedStatus, selectedYear, selectedRetentionFilter, selectedProjectType]);
 
   const handleOpenAdd = () => {
     setEditingProject(null);
@@ -142,6 +153,30 @@ const AppContent = () => {
         </div>
       </header>
 
+      {/* Galnewa Secretariat Header Banner */}
+      <div className="bg-[#0d5c4b] text-white py-6 px-4 shadow-md border-b border-[#0b4d3f]">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-center space-x-4">
+            <div className="w-12 h-12 bg-amber-500/10 border border-amber-500/30 text-amber-400 rounded-xl flex items-center justify-center flex-shrink-0 shadow-inner">
+              <Landmark size={28} />
+            </div>
+            <div>
+              <div className="flex flex-wrap items-center gap-2">
+                <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-white font-sans">
+                  {t('headerTitle')}
+                </h1>
+                <span className="bg-[#0b4d3f] text-emerald-300 text-[10px] sm:text-xs font-semibold px-2 py-0.5 rounded-full border border-emerald-500/20 shadow-sm flex-shrink-0">
+                  {t('headerPill')}
+                </span>
+              </div>
+              <p className="text-xs sm:text-sm text-emerald-100/80 mt-1 font-normal leading-relaxed">
+                {t('headerSubtitle')}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
         {loading ? (
           <div className="flex justify-center items-center h-64">
@@ -149,8 +184,6 @@ const AppContent = () => {
           </div>
         ) : (
           <>
-            <KPIDashboard projects={projects} />
-
             <FilterBar
               searchTerm={searchTerm}
               setSearchTerm={setSearchTerm}
@@ -162,12 +195,17 @@ const AppContent = () => {
               setSelectedYear={setSelectedYear}
               selectedRetentionFilter={selectedRetentionFilter}
               setSelectedRetentionFilter={setSelectedRetentionFilter}
+              selectedProjectType={selectedProjectType}
+              setSelectedProjectType={setSelectedProjectType}
               programOptions={programOptions}
               statusOptions={statusOptions}
               yearOptions={yearOptions}
+              projectTypeOptions={projectTypeOptions}
               onAddProject={handleOpenAdd}
               filteredProjects={filteredProjects}
             />
+
+            <KPIDashboard projects={filteredProjects} />
 
             {/* View Rendering */}
             <div className="transition-all duration-300 ease-in-out">

@@ -61,13 +61,14 @@ const TableView = ({ projects, onEdit, onViewDetails, onDelete, onPhotoView }) =
                 return (
                 <tr key={project.id} className="hover:bg-slate-50 transition-colors">
                   <td className="p-4 max-w-md">
-                    <div className="font-semibold text-slate-800 mb-1 leading-snug">
+                    <div className="text-xs sm:text-sm font-semibold text-slate-800 mb-1 leading-snug">
                       <ExpandableText text={project.name} year={project.year} maxLength={80} />
                     </div>
                     <div className="text-xs text-slate-500 mb-2">{project.gnDivision} • {project.contractor}</div>
                     <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-100 text-slate-600 mr-2">
                       {t({
                         "Decentralized Budget": "decentralizedBudget",
+                        "District Development": "districtDevelopment",
                         "Building Rehabilitation": "buildingRehabilitation",
                         "Community Power": "communityPower",
                         "Ministries": "ministries",
@@ -88,7 +89,6 @@ const TableView = ({ projects, onEdit, onViewDetails, onDelete, onPhotoView }) =
                         "Physical Progress 26-50%": "physical26to50",
                         "Physical Progress 51-75%": "physical51to75",
                         "Physical Progress 76-99%": "physical76to99",
-                        "Work Completed": "workCompleted",
                         "Completed": "completed",
                         "In Progress": "inProgress"
                       }[project.status] || project.status)}

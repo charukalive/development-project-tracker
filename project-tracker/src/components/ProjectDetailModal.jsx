@@ -32,6 +32,7 @@ const ProjectDetailModal = ({ isOpen, onClose, project }) => {
               <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-800">
                 {t({
                   "Decentralized Budget": "decentralizedBudget",
+                  "District Development": "districtDevelopment",
                   "Building Rehabilitation": "buildingRehabilitation",
                   "Community Power": "communityPower",
                   "Ministries": "ministries",
@@ -59,6 +60,16 @@ const ProjectDetailModal = ({ isOpen, onClose, project }) => {
                   "Completed": "completed",
                   "In Progress": "inProgress"
                 }[project.status] || project.status)}
+              </span>
+            </div>
+            <div>
+              <p className="text-sm text-slate-500 mb-1">{t('projectType')}</p>
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-800">
+                {t({
+                  "Construction": "construction",
+                  "Purchasing": "purchasing",
+                  "Machine repair": "machineRepair"
+                }[project.projectType] || project.projectType || 'construction')}
               </span>
             </div>
             <div>

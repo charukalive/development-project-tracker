@@ -36,6 +36,7 @@ const ProjectFormModal = ({ isOpen, onClose, onSave, editingProject }) => {
         gnDivision: formData.get('gnDivision'),
         program: formData.get('program'),
         status: formData.get('status'),
+        projectType: formData.get('projectType') || 'Construction',
         year: formData.get('year'),
         allocation: parseFloat(formData.get('allocation')) || 0,
         disbursed: parseFloat(formData.get('disbursed')) || 0,
@@ -94,6 +95,7 @@ const ProjectFormModal = ({ isOpen, onClose, onSave, editingProject }) => {
               <label className="block text-sm font-medium text-slate-700 mb-1">{t('program')} *</label>
               <select name="program" required defaultValue={editingProject?.program || 'Decentralized Budget'} className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white">
                 <option value="Decentralized Budget">{t('decentralizedBudget')}</option>
+                <option value="District Development">{t('districtDevelopment')}</option>
                 <option value="Building Rehabilitation">{t('buildingRehabilitation')}</option>
                 <option value="Community Power">{t('communityPower')}</option>
                 <option value="Ministries">{t('ministries')}</option>
@@ -114,8 +116,16 @@ const ProjectFormModal = ({ isOpen, onClose, onSave, editingProject }) => {
                 <option value="Physical Progress 26-50%">{t('physical26to50')}</option>
                 <option value="Physical Progress 51-75%">{t('physical51to75')}</option>
                 <option value="Physical Progress 76-99%">{t('physical76to99')}</option>
-                <option value="Work Completed">{t('workCompleted')}</option>
                 <option value="Completed">{t('completed')}</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">{t('projectType')} *</label>
+              <select name="projectType" defaultValue={editingProject?.projectType || 'Construction'} className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white">
+                <option value="Construction">{t('construction')}</option>
+                <option value="Purchasing">{t('purchasing')}</option>
+                <option value="Machine repair">{t('machineRepair')}</option>
               </select>
             </div>
 

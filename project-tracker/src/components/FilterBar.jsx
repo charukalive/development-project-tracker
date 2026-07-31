@@ -14,9 +14,12 @@ const FilterBar = ({
   setSelectedYear,
   selectedRetentionFilter,
   setSelectedRetentionFilter,
+  selectedProjectType,
+  setSelectedProjectType,
   programOptions,
   statusOptions,
   yearOptions,
+  projectTypeOptions,
   onAddProject,
   filteredProjects
 }) => {
@@ -57,6 +60,7 @@ const FilterBar = ({
           {programOptions.map(p => {
             const programMap = {
                 "Decentralized Budget": "decentralizedBudget",
+                "District Development": "districtDevelopment",
                 "Building Rehabilitation": "buildingRehabilitation",
                 "Community Power": "communityPower",
                 "Ministries": "ministries",
@@ -85,11 +89,26 @@ const FilterBar = ({
                 "Physical Progress 26-50%": "physical26to50",
                 "Physical Progress 51-75%": "physical51to75",
                 "Physical Progress 76-99%": "physical76to99",
-                "Work Completed": "workCompleted",
                 "Completed": "completed",
                 "In Progress": "inProgress"
              };
              return <option key={s} value={s}>{t(statusMap[s] || s)}</option>;
+          })}
+        </select>
+
+        <select
+          className="block w-full md:w-40 py-2 px-3 border border-slate-200 bg-white rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          value={selectedProjectType}
+          onChange={(e) => setSelectedProjectType(e.target.value)}
+        >
+          <option value="All">{t('allProjectTypes')}</option>
+          {projectTypeOptions.map(pt => {
+             const projectTypeMap = {
+                 "Construction": "construction",
+                 "Purchasing": "purchasing",
+                 "Machine repair": "machineRepair"
+             };
+             return <option key={pt} value={pt}>{t(projectTypeMap[pt] || pt)}</option>;
           })}
         </select>
 
