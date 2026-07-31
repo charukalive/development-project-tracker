@@ -9,7 +9,7 @@ import AnalyticsView from './components/AnalyticsView';
 import ProjectFormModal from './components/ProjectFormModal';
 import ProjectDetailModal from './components/ProjectDetailModal';
 import PhotoViewerModal from './components/PhotoViewerModal';
-import { LayoutGrid, TableProperties, BarChart3, Globe, Landmark, Sun, Moon } from 'lucide-react';
+import { LayoutGrid, TableProperties, BarChart3, Globe, Landmark, Sun, Moon, ChevronDown, Check } from 'lucide-react';
 
 const AppContent = () => {
   const { t, language, setLanguage } = useLanguage();
@@ -25,6 +25,7 @@ const AppContent = () => {
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem('theme') || 'light';
   });
+  const [isLangMenuOpen, setIsLangMenuOpen] = useState(false);
 
   useEffect(() => {
     if (theme === 'dark') {
@@ -149,7 +150,7 @@ const AppContent = () => {
             </div>
 
             {/* Theme Toggle & Language Toggle */}
-            <div className="flex items-center space-x-2 border-l border-slate-200 dark:border-slate-800 pl-4">
+            <div className="flex items-center space-x-2 border-l border-slate-200 dark:border-slate-800 pl-4 relative">
               <button
                 onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
                 className="p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 hover:scale-105 active:scale-95 hover:rotate-12 transition-all duration-250 cursor-pointer mr-1"
@@ -157,16 +158,47 @@ const AppContent = () => {
               >
                 {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
               </button>
-              <Globe size={16} className="text-slate-400 dark:text-slate-500" />
-              <select
-                value={language}
-                onChange={(e) => setLanguage(e.target.value)}
-                className="bg-transparent text-sm font-medium text-slate-700 dark:text-slate-300 focus:outline-none cursor-pointer"
-              >
-                <option value="en" className="dark:bg-slate-900 dark:text-slate-100">EN</option>
-                <option value="si" className="dark:bg-slate-900 dark:text-slate-100">සිං</option>
-                <option value="ta" className="dark:bg-slate-900 dark:text-slate-100">தமிழ்</option>
-              </select>
+
+              {/* Custom Language Dropdown Selector */}
+              <div className="relative">
+                <button
+                  onClick={() => setIsLangMenuOpen(!isLangMenuOpen)}
+                  className="flex items-center space-x-1.5 p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 transition-colors cursor-pointer"
+                >
+                  <Globe size={16} className="text-slate-450 dark:text-slate-505" />
+                  <span className="text-xs font-semibold uppercase">{language === 'en' ? 'EN' : language === 'si' ? 'සිං' : 'தம'}</span>
+                  <ChevronDown size={14} className={`text-slate-400 dark:text-slate-550 transition-transform duration-200 ${isLangMenuOpen ? 'rotate-180' : ''}`} />
+                </button>
+
+                {isLangMenuOpen && (
+                  <>
+                    <div className="fixed inset-0 z-50" onClick={() => setIsLangMenuOpen(false)} />
+                    <div className="absolute right-0 mt-2 w-32 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-xl shadow-xl z-55 overflow-hidden animate-fade-in p-1">
+                      {[
+                        { code: 'en', label: 'English (EN)' },
+                        { code: 'si', label: 'සිංහල (සිං)' },
+                        { code: 'ta', label: 'தமிழ் (தம)' }
+                      ].map((lang) => (
+                        <button
+                          key={lang.code}
+                          onClick={() => {
+                            setLanguage(lang.code);
+                            setIsLangMenuOpen(false);
+                          }}
+                          className={`w-full flex items-center justify-between px-2.5 py-1.5 text-xs font-medium rounded-lg transition-colors cursor-pointer ${
+                            language === lang.code
+                              ? 'bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 dark:text-emerald-400'
+                              : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/60'
+                          }`}
+                        >
+                          <span>{lang.label}</span>
+                          {language === lang.code && <Check size={12} className="text-emerald-650 dark:text-emerald-400 ml-1.5" />}
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
           </div>
         </div>
