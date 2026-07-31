@@ -115,6 +115,119 @@ const AppContent = () => {
     setIsPhotoViewerOpen(true);
   };
 
+  const handlePrintPDF = () => {
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) {
+      alert("Please allow popups to generate the report.");
+      return;
+    }
+
+    const title = t('appTitle');
+    const headerTitle = t('headerTitle');
+    
+    const rows = filteredProjects.map(p => `
+      <tr style="border-bottom: 1px solid #e2e8f0;">
+        <td style="padding: 10px 8px; text-align: left; font-size: 11px; font-weight: 500; color: #1e293b;">${p.name}</td>
+        <td style="padding: 10px 8px; text-align: left; font-size: 11px; color: #475569;">${p.gnDivision}</td>
+        <td style="padding: 10px 8px; text-align: left; font-size: 11px; color: #475569;">${p.program}</td>
+        <td style="padding: 10px 8px; text-align: left; font-size: 11px; color: #475569;">${p.status}</td>
+        <td style="padding: 10px 8px; text-align: right; font-size: 11px; font-family: monospace; font-weight: 600; color: #0f172a;">${Number(p.allocation).toFixed(2)}</td>
+        <td style="padding: 10px 8px; text-align: right; font-size: 11px; font-family: monospace; font-weight: 600; color: #059669;">${Number(p.disbursed).toFixed(2)}</td>
+        <td style="padding: 10px 8px; text-align: left; font-size: 11px; color: #475569;">${p.contractor || '-'}</td>
+      </tr>
+    `).join('');
+
+    const totalAlloc = filteredProjects.reduce((acc, p) => acc + Number(p.allocation), 0).toFixed(2);
+    const totalDisb = filteredProjects.reduce((acc, p) => acc + Number(p.disbursed), 0).toFixed(2);
+
+    const html = `
+      <html>
+        <head>
+          <title>${headerTitle} - ${title}</title>
+          <style>
+            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+            body { font-family: 'Inter', sans-serif; padding: 30px; color: #1e293b; background: #fff; margin: 0; }
+            .header-container { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #0d5c4b; padding-bottom: 15px; margin-bottom: 20px; }
+            .secretariat-title { font-size: 22px; font-weight: 700; margin: 0 0 4px 0; color: #0d5c4b; }
+            .app-title { font-size: 14px; font-weight: 500; margin: 0; color: #64748b; }
+            .btn-print { background: #0d5c4b; color: white; border: none; padding: 10px 18px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+            .btn-print:hover { background: #0b4d3f; }
+            .meta-grid { display: grid; grid-template-cols: repeat(4, 1fr); gap: 15px; background: #f8fafc; padding: 15px; border-radius: 10px; margin-bottom: 25px; border: 1px solid #e2e8f0; }
+            .meta-item { display: flex; flex-direction: column; }
+            .meta-label { font-size: 10px; text-transform: uppercase; font-weight: 600; color: #64748b; margin-bottom: 4px; letter-spacing: 0.5px; }
+            .meta-value { font-size: 15px; font-weight: 700; color: #0f172a; }
+            table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+            th { background-color: #f1f5f9; padding: 12px 8px; text-align: left; font-size: 11px; font-weight: 600; color: #475569; border-bottom: 2px solid #cbd5e1; text-transform: uppercase; }
+            .footer { margin-top: 50px; text-align: center; font-size: 11px; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 15px; font-weight: 500; }
+            @media print {
+              .no-print { display: none !important; }
+              body { padding: 0; }
+              .meta-grid { border: 1px solid #cbd5e1; background: #f8fafc !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            }
+          </style>
+        </head>
+        <body>
+          <div class="header-container">
+            <div>
+              <h1 class="secretariat-title">${headerTitle}</h1>
+              <h2 class="app-title">${title}</h2>
+            </div>
+            <button class="no-print btn-print" onclick="window.print()">
+              🖨️ ${t('printPDF')}
+            </button>
+          </div>
+          <div class="meta-grid">
+            <div class="meta-item">
+              <span class="meta-label">Date Generated</span>
+              <span class="meta-value">${new Date().toLocaleDateString()}</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Total Projects</span>
+              <span class="meta-value">${filteredProjects.length}</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Total Allocation</span>
+              <span class="meta-value" style="color: #0f172a;">Rs. ${totalAlloc} M</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Total Disbursed</span>
+              <span class="meta-value" style="color: #059669;">Rs. ${totalDisb} M</span>
+            </div>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 30%;">${t('projectName')}</th>
+                <th>${t('gnDivision')}</th>
+                <th>${t('program')}</th>
+                <th>${t('status')}</th>
+                <th style="text-align: right;">${t('allocation')} (M)</th>
+                <th style="text-align: right;">${t('disbursed')} (M)</th>
+                <th>${t('contractor')}</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rows}
+            </tbody>
+          </table>
+          <div class="footer">
+            ${headerTitle} - Progress Report &copy; ${new Date().getFullYear()}
+          </div>
+          <script>
+            window.onload = function() {
+              setTimeout(function() {
+                window.print();
+              }, 400);
+            }
+          </script>
+        </body>
+      </html>
+    `;
+
+    printWindow.document.write(html);
+    printWindow.document.close();
+  };
+
   const handleSaveProject = (projectData) => {
     if (editingProject) {
       updateProject(projectData);
@@ -253,6 +366,7 @@ const AppContent = () => {
               yearOptions={yearOptions}
               projectTypeOptions={projectTypeOptions}
               onAddProject={handleOpenAdd}
+              onPrintPDF={handlePrintPDF}
               filteredProjects={filteredProjects}
             />
 

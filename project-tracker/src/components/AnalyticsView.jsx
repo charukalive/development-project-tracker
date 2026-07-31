@@ -6,11 +6,6 @@ const COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4'
 
 const AnalyticsView = ({ projects }) => {
   const { t } = useLanguage();
-  
-  const isDark = document.documentElement.classList.contains('dark');
-  const gridColor = isDark ? '#334155' : '#e2e8f0';
-  const tickColor = isDark ? '#94a3b8' : '#64748b';
-  const tooltipBg = isDark ? '#1e293b' : '#ffffff';
 
   const programData = useMemo(() => {
     const data = {};
@@ -37,16 +32,16 @@ const AnalyticsView = ({ projects }) => {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <div className="bg-white dark:bg-slate-900/50 backdrop-blur-md p-6 rounded-xl shadow-sm border border-slate-100 dark:border-slate-800/80 transition-colors duration-200">
-        <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100 mb-6">{t('allocationByProgram')}</h3>
+      <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+        <h3 className="text-lg font-semibold text-slate-800 mb-6">{t('allocationByProgram')}</h3>
         <div className="h-80 w-full">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={programData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridColor} />
-              <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: tickColor, fontSize: 12}} />
-              <YAxis axisLine={false} tickLine={false} tick={{fill: tickColor, fontSize: 12}} />
-              <Tooltip cursor={{fill: isDark ? '#1e293b' : '#f1f5f9'}} contentStyle={{backgroundColor: tooltipBg, borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'}} labelStyle={{color: isDark ? '#f8fafc' : '#1e293b'}} />
-              <Legend iconType="circle" wrapperStyle={{fontSize: '12px', paddingTop: '20px', color: tickColor}} />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+              <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#64748b', fontSize: 12}} />
+              <YAxis axisLine={false} tickLine={false} tick={{fill: '#64748b', fontSize: 12}} />
+              <Tooltip cursor={{fill: '#f1f5f9'}} contentStyle={{borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'}} />
+              <Legend iconType="circle" wrapperStyle={{fontSize: '12px', paddingTop: '20px'}} />
               <Bar dataKey="allocation" name="Total Allocation" fill="#94a3b8" radius={[4, 4, 0, 0]} />
               <Bar dataKey="disbursed" name="Disbursed" fill="#10b981" radius={[4, 4, 0, 0]} />
             </BarChart>
@@ -54,8 +49,8 @@ const AnalyticsView = ({ projects }) => {
         </div>
       </div>
 
-      <div className="bg-white dark:bg-slate-900/50 backdrop-blur-md p-6 rounded-xl shadow-sm border border-slate-100 dark:border-slate-800/80 transition-colors duration-200">
-        <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100 mb-6">{t('allocationByGN')}</h3>
+      <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+        <h3 className="text-lg font-semibold text-slate-800 mb-6">{t('allocationByGN')}</h3>
         <div className="h-80 w-full">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
@@ -75,7 +70,7 @@ const AnalyticsView = ({ projects }) => {
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
-              <Tooltip formatter={(value) => [`${value.toFixed(2)} M`, 'Allocation']} contentStyle={{backgroundColor: tooltipBg, borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'}} labelStyle={{color: isDark ? '#f8fafc' : '#1e293b'}} />
+              <Tooltip formatter={(value) => [`${value.toFixed(2)} M`, 'Allocation']} contentStyle={{borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'}} />
             </PieChart>
           </ResponsiveContainer>
         </div>

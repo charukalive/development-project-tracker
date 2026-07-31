@@ -98,8 +98,11 @@ export const translations = {
     remaining: "remaining",
     payable: "Payable",
     ago: "ago",
-    showMore: "more...",
-    showLess: "less"
+    showLess: "less",
+    printPDF: "Print PDF",
+    splitView: "Split Slider",
+    sideBySide: "Side-by-Side",
+    dragPrompt: "Drag slider to compare"
   },
   si: {
     appTitle: "ප්‍රාදේශීය ව්‍යාපෘති කළමනාකරණ පද්ධතිය",
@@ -193,7 +196,11 @@ export const translations = {
     payable: "ගෙවීමට සුදුසුයි",
     ago: "පෙර",
     showMore: "තවත්...",
-    showLess: "අඩු කරන්න"
+    showLess: "අඩු කරන්න",
+    printPDF: "PDF මුද්‍රණය",
+    splitView: "බෙදුණු දසුන",
+    sideBySide: "පැත්තෙන් පැත්ත දසුන",
+    dragPrompt: "සංසන්දනය කිරීමට ස්ලයිඩරය දෙපසට අදින්න"
   },
   ta: {
     appTitle: "பிராந்திய அபிவிருத்தி திட்ட முகாமைத்துவ அமைப்பு",
@@ -287,6 +294,10 @@ export const translations = {
     payable: "செலுத்த வேண்டியவை",
     ago: "முன்பு",
     showMore: "மேலும்...",
-    showLess: "குறைவாக"
+    showLess: "குறைவாக",
+    printPDF: "PDF அச்சிடுக",
+    splitView: "பிளவு ஸ்லைடர்",
+    sideBySide: "பக்கவாட்டு காட்சி",
+    dragPrompt: "ஒப்பிட ஸ்லைடரை இழுக்கவும்"
   }
 };

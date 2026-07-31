@@ -8,11 +8,11 @@ const ProjectDetailModal = ({ isOpen, onClose, project }) => {
   if (!isOpen || !project) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 dark:bg-slate-950/65 backdrop-blur-sm">
-      <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl w-full max-w-lg overflow-hidden border border-slate-100 dark:border-slate-800">
-        <div className="flex items-center justify-between p-6 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/40">
-          <h2 className="text-xl font-semibold text-slate-800 dark:text-white pr-4">{project.name}</h2>
-          <button onClick={onClose} className="p-2 text-slate-400 dark:text-slate-500 hover:text-slate-655 dark:hover:text-slate-300 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors flex-shrink-0 cursor-pointer">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden">
+        <div className="flex items-center justify-between p-6 border-b border-slate-100 bg-slate-50">
+          <h2 className="text-xl font-semibold text-slate-800 pr-4">{project.name}</h2>
+          <button onClick={onClose} className="p-2 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-200 transition-colors flex-shrink-0">
             <X size={20} />
           </button>
         </div>
@@ -20,19 +20,18 @@ const ProjectDetailModal = ({ isOpen, onClose, project }) => {
         <div className="p-6 space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <p className="text-sm text-slate-500 dark:text-slate-400 mb-1">{t('gnDivision')}</p>
-              <p className="font-medium text-slate-800 dark:text-slate-100">{project.gnDivision}</p>
+              <p className="text-sm text-slate-500 mb-1">{t('gnDivision')}</p>
+              <p className="font-medium text-slate-800">{project.gnDivision}</p>
             </div>
             <div>
-              <p className="text-sm text-slate-500 dark:text-slate-400 mb-1">{t('year')}</p>
-              <p className="font-medium text-slate-800 dark:text-slate-100">{project.year || '-'}</p>
+              <p className="text-sm text-slate-500 mb-1">{t('year')}</p>
+              <p className="font-medium text-slate-800">{project.year || '-'}</p>
             </div>
             <div>
-              <p className="text-sm text-slate-500 dark:text-slate-400 mb-1">{t('program')}</p>
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200">
+              <p className="text-sm text-slate-500 mb-1">{t('program')}</p>
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-800">
                 {t({
                   "Decentralized Budget": "decentralizedBudget",
-                  "District Development": "districtDevelopment",
                   "Building Rehabilitation": "buildingRehabilitation",
                   "Community Power": "communityPower",
                   "Ministries": "ministries",
@@ -42,9 +41,9 @@ const ProjectDetailModal = ({ isOpen, onClose, project }) => {
               </span>
             </div>
             <div>
-              <p className="text-sm text-slate-500 dark:text-slate-400 mb-1">{t('status')}</p>
+              <p className="text-sm text-slate-500 mb-1">{t('status')}</p>
               <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                project.status === 'Completed' ? 'bg-emerald-100 dark:bg-emerald-950/20 text-emerald-800 dark:text-emerald-400' : 'bg-blue-100 dark:bg-blue-950/20 text-blue-800 dark:text-blue-400'
+                project.status === 'Completed' ? 'bg-emerald-100 text-emerald-800' : 'bg-blue-100 text-blue-800'
               }`}>
                 {t({
                   "Not Approved": "notApproved",
@@ -63,64 +62,46 @@ const ProjectDetailModal = ({ isOpen, onClose, project }) => {
               </span>
             </div>
             <div>
-              <p className="text-sm text-slate-500 dark:text-slate-400 mb-1">{t('projectType')}</p>
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200">
-                {t({
-                  "Construction": "construction",
-                  "Purchasing": "purchasing",
-                  "Machine repair": "machineRepair"
-                }[project.projectType] || project.projectType || 'construction')}
-              </span>
-            </div>
-            <div>
-              <p className="text-sm text-slate-500 dark:text-slate-400 mb-1">{t('contractor')}</p>
-              <p className="font-medium text-slate-800 dark:text-slate-100">{project.contractor || '-'}</p>
+              <p className="text-sm text-slate-500 mb-1">{t('contractor')}</p>
+              <p className="font-medium text-slate-800">{project.contractor || '-'}</p>
             </div>
           </div>
 
-          <div className="border-t border-slate-100 dark:border-slate-800 pt-4 grid grid-cols-2 gap-4">
+          <div className="border-t border-slate-100 pt-4 grid grid-cols-2 gap-4">
             <div>
-              <p className="text-sm text-slate-500 dark:text-slate-400 mb-1">{t('allocation')}</p>
-              <p className="font-mono text-lg text-slate-800 dark:text-slate-100">{Number(project.allocation).toFixed(2)}</p>
+              <p className="text-sm text-slate-500 mb-1">{t('allocation')}</p>
+              <p className="font-mono text-lg text-slate-800">{Number(project.allocation).toFixed(2)}</p>
             </div>
             <div>
-              <p className="text-sm text-slate-500 dark:text-slate-400 mb-1">{t('disbursed')}</p>
-              <p className="font-mono text-lg text-emerald-600 dark:text-emerald-400">{Number(project.disbursed).toFixed(2)}</p>
+              <p className="text-sm text-slate-500 mb-1">{t('disbursed')}</p>
+              <p className="font-mono text-lg text-emerald-600">{Number(project.disbursed).toFixed(2)}</p>
             </div>
             <div>
-              <p className="text-sm text-slate-500 dark:text-slate-400 mb-1">{t('financialProgress')}</p>
-              <p className="font-medium text-slate-800 dark:text-slate-100">{project.financialProgress || '-'}</p>
+              <p className="text-sm text-slate-500 mb-1">{t('financialProgress')}</p>
+              <p className="font-medium text-slate-800">{project.financialProgress || '-'}</p>
             </div>
             <div>
-              <p className="text-sm text-slate-500 dark:text-slate-400 mb-1">{t('retentionAmount')}</p>
-              <p className="font-mono text-lg text-slate-800 dark:text-slate-100">{project.retentionAmount != null ? Number(project.retentionAmount).toFixed(2) : '-'}</p>
+              <p className="text-sm text-slate-500 mb-1">{t('retentionAmount')}</p>
+              <p className="font-mono text-lg text-slate-800">{project.retentionAmount != null ? Number(project.retentionAmount).toFixed(2) : '-'}</p>
             </div>
             <div>
-              <p className="text-sm text-slate-500 dark:text-slate-400 mb-1">{t('retentionPeriodMonths')}</p>
-              <p className="font-medium text-slate-800 dark:text-slate-100">{project.retentionPeriodMonths || '-'}</p>
+              <p className="text-sm text-slate-500 mb-1">{t('retentionPeriodMonths')}</p>
+              <p className="font-medium text-slate-800">{project.retentionPeriodMonths || '-'}</p>
             </div>
             <div className="col-span-2">
-              <p className="text-sm text-slate-500 dark:text-slate-400 mb-1">{t('specialRemarks')}</p>
-              <p className="font-medium text-slate-800 dark:text-slate-100">{project.specialRemarks || '-'}</p>
+              <p className="text-sm text-slate-500 mb-1">{t('specialRemarks')}</p>
+              <p className="font-medium text-slate-800">{project.specialRemarks || '-'}</p>
             </div>
           </div>
 
-          <div className="border-t border-slate-100 dark:border-slate-800 pt-4 grid grid-cols-2 gap-4">
+          <div className="border-t border-slate-100 pt-4 grid grid-cols-2 gap-4">
              <div>
-              <p className="text-sm text-slate-500 dark:text-slate-400 mb-1">{t('startDate')}</p>
-              <p className="text-slate-800 dark:text-slate-100 font-medium">{project.startDate}</p>
+              <p className="text-sm text-slate-500 mb-1">{t('startDate')}</p>
+              <p className="text-slate-800">{project.startDate}</p>
             </div>
             <div>
-              <p className="text-sm text-slate-500 dark:text-slate-400 mb-1">{t('endDate')}</p>
-              <p className="text-slate-800 dark:text-slate-100 font-medium">{project.endDate || '-'}</p>
-            </div>
-            <div>
-              <p className="text-sm text-slate-500 dark:text-slate-400 mb-1">{t('projectDuration')}</p>
-              <p className="text-slate-800 dark:text-slate-100 font-medium">{project.projectDuration || '-'}</p>
-            </div>
-            <div>
-              <p className="text-sm text-slate-500 dark:text-slate-400 mb-1">{t('actualEndDate')}</p>
-              <p className="text-slate-800 dark:text-slate-100 font-medium">{project.actualEndDate || '-'}</p>
+              <p className="text-sm text-slate-500 mb-1">{t('endDate')}</p>
+              <p className="text-slate-800">{project.endDate || '-'}</p>
             </div>
           </div>
         </div>
