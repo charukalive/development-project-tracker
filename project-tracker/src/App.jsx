@@ -152,7 +152,7 @@ const AppContent = () => {
             <div className="flex items-center space-x-2 border-l border-slate-200 dark:border-slate-800 pl-4">
               <button
                 onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                className="p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer mr-1"
+                className="p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 hover:scale-105 active:scale-95 hover:rotate-12 transition-all duration-250 cursor-pointer mr-1"
                 title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
               >
                 {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
@@ -229,24 +229,30 @@ const AppContent = () => {
             {/* View Rendering */}
             <div className="transition-all duration-300 ease-in-out">
               {viewMode === 'table' && (
-                <TableView
-                  projects={filteredProjects}
-                  onEdit={handleOpenEdit}
-                  onViewDetails={handleOpenDetails}
-                  onDelete={deleteProject}
-                  onPhotoView={handleOpenPhotoView}
-                />
+                <div className="animate-fade-in">
+                  <TableView
+                    projects={filteredProjects}
+                    onEdit={handleOpenEdit}
+                    onViewDetails={handleOpenDetails}
+                    onDelete={deleteProject}
+                    onPhotoView={handleOpenPhotoView}
+                  />
+                </div>
               )}
               {viewMode === 'kanban' && (
-                <KanbanView
-                  projects={filteredProjects}
-                  onEdit={handleOpenEdit}
-                  onViewDetails={handleOpenDetails}
-                  onPhotoView={handleOpenPhotoView}
-                />
+                <div className="animate-fade-in">
+                  <KanbanView
+                    projects={filteredProjects}
+                    onEdit={handleOpenEdit}
+                    onViewDetails={handleOpenDetails}
+                    onPhotoView={handleOpenPhotoView}
+                  />
+                </div>
               )}
               {viewMode === 'analytics' && (
-                <AnalyticsView projects={filteredProjects} />
+                <div className="animate-fade-in">
+                  <AnalyticsView projects={filteredProjects} />
+                </div>
               )}
             </div>
           </>

@@ -161,14 +161,14 @@ const TableView = ({ projects, onEdit, onViewDetails, onDelete, onPhotoView }) =
                   </td>
                   <td className="p-4 align-top text-center">
                     <div className="flex justify-center space-x-2">
-                      <button onClick={() => onViewDetails(project)} className="p-1.5 text-slate-400 dark:text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 rounded-md hover:bg-blue-50 dark:hover:bg-blue-950/30 transition-colors cursor-pointer" title={t('projectDetails')}>
+                      <button onClick={() => onViewDetails(project)} className="p-1.5 text-slate-400 dark:text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 rounded-md hover:bg-blue-50 dark:hover:bg-blue-950/30 hover:scale-110 active:scale-90 transition-all duration-150 cursor-pointer" title={t('projectDetails')}>
                         <Eye size={18} />
                       </button>
-                      <button onClick={() => onEdit(project)} className="p-1.5 text-slate-400 dark:text-slate-500 hover:text-emerald-600 dark:hover:text-emerald-400 rounded-md hover:bg-emerald-50 dark:hover:bg-emerald-950/30 transition-colors cursor-pointer" title={t('editProject')}>
+                      <button onClick={() => onEdit(project)} className="p-1.5 text-slate-400 dark:text-slate-500 hover:text-emerald-600 dark:hover:text-emerald-400 rounded-md hover:bg-emerald-50 dark:hover:bg-emerald-950/30 hover:scale-110 active:scale-90 transition-all duration-150 cursor-pointer" title={t('editProject')}>
                         <Edit2 size={18} />
                       </button>
                       {(project.beforeImage || project.afterImage) && (
-                        <button onClick={() => onPhotoView(project)} className="p-1.5 text-slate-400 dark:text-slate-500 hover:text-purple-600 dark:hover:text-purple-400 rounded-md hover:bg-purple-50 dark:hover:bg-purple-950/30 transition-colors cursor-pointer" title={t('photoComparison')}>
+                        <button onClick={() => onPhotoView(project)} className="p-1.5 text-slate-400 dark:text-slate-500 hover:text-purple-600 dark:hover:text-purple-400 rounded-md hover:bg-purple-50 dark:hover:bg-purple-950/30 hover:scale-110 active:scale-90 transition-all duration-150 cursor-pointer" title={t('photoComparison')}>
                           <ImageIcon size={18} />
                         </button>
                       )}
@@ -176,7 +176,7 @@ const TableView = ({ projects, onEdit, onViewDetails, onDelete, onPhotoView }) =
                         if(window.confirm('Are you sure you want to delete this project?')) {
                           onDelete(project.id);
                         }
-                      }} className="p-1.5 text-slate-400 dark:text-slate-500 hover:text-red-600 dark:hover:text-red-400 rounded-md hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors cursor-pointer">
+                      }} className="p-1.5 text-slate-400 dark:text-slate-500 hover:text-red-600 dark:hover:text-red-400 rounded-md hover:bg-red-50 dark:hover:bg-red-950/30 hover:scale-110 active:scale-90 transition-all duration-150 cursor-pointer" title={t('delete')}>
                         <Trash2 size={18} />
                       </button>
                     </div>

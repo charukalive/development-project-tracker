@@ -20,21 +20,21 @@ const KanbanCard = ({ project, onEdit, onViewDetails, onPhotoView }) => {
   const utilization = project.allocation > 0 ? (project.disbursed / project.allocation) * 100 : 0;
 
   return (
-    <div className="bg-white dark:bg-slate-900 p-4 rounded-lg shadow-sm border border-slate-200 dark:border-slate-800 mb-3 hover:shadow-md transition-shadow">
+    <div className="bg-white dark:bg-slate-900 p-4 rounded-lg shadow-sm border border-slate-200 dark:border-slate-800 mb-3 hover:scale-[1.02] active:scale-[0.99] hover:shadow-md transition-all duration-200 cursor-pointer">
       <div className="flex justify-between items-start mb-2">
         <h4 className="text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-100 leading-tight pr-2">
           <ExpandableText text={project.name} year={project.year} maxLength={60} />
         </h4>
         <div className="flex space-x-1">
            {(project.beforeImage || project.afterImage) && (
-              <button onClick={() => onPhotoView(project)} className="text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors cursor-pointer">
+              <button onClick={() => onPhotoView(project)} className="text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 hover:scale-110 active:scale-90 transition-all duration-150 cursor-pointer">
                 <ImageIcon size={14} />
               </button>
             )}
-           <button onClick={() => onViewDetails(project)} className="text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-pointer">
+           <button onClick={() => onViewDetails(project)} className="text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:scale-110 active:scale-90 transition-all duration-150 cursor-pointer">
               <Eye size={14} />
             </button>
-            <button onClick={() => onEdit(project)} className="text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors cursor-pointer">
+            <button onClick={() => onEdit(project)} className="text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:scale-110 active:scale-90 transition-all duration-150 cursor-pointer">
               <Edit2 size={14} />
             </button>
         </div>
