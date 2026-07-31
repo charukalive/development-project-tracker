@@ -1,9 +1,9 @@
 import React, { useMemo } from 'react';
 import { useLanguage } from '../context/LanguageContext';
-import { Briefcase, DollarSign, CheckCircle2, Clock, Hourglass } from 'lucide-react';
+import { HardHat, Hourglass, DollarSign, CheckCircle2 } from 'lucide-react';
 
 const KPIDashboard = ({ projects }) => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   const stats = useMemo(() => {
     const totalAllocation = projects.reduce((acc, curr) => acc + (parseFloat(curr.allocation) || 0), 0);
@@ -42,47 +42,60 @@ const KPIDashboard = ({ projects }) => {
     };
   }, [projects]);
 
+  const formattedAllocation = useMemo(() => {
+    const value = stats.totalAllocation.toFixed(2);
+    if (language === 'si') return `රු. ${value} මි.`;
+    if (language === 'ta') return `ரூ. ${value} மி.`;
+    return `Rs. ${value} M`;
+  }, [stats.totalAllocation, language]);
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-      <div className="bg-white rounded-xl shadow-sm p-6 border-b-4 border-yellow-500 flex items-center justify-between">
-        <div>
-          <p className="text-sm text-slate-500 font-medium mb-1">{t('ongoingProjects')}</p>
-          <p className="text-3xl font-bold text-yellow-600">{stats.ongoingProjectsCount}</p>
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
+      {/* Ongoing Card */}
+      <div className="bg-white dark:bg-slate-900/50 backdrop-blur-md border border-slate-100 dark:border-slate-800/80 p-3.5 sm:p-4 rounded-xl flex items-center justify-between shadow-sm transition-all duration-200 hover:shadow-md hover:border-slate-200 dark:hover:border-slate-700/80">
+        <div className="flex-1 min-w-0">
+          <p className="text-xs sm:text-sm font-semibold text-slate-500 dark:text-slate-400 truncate">{t('ongoingProjects')}</p>
+          <p className="text-xl sm:text-2xl font-bold text-amber-500 dark:text-amber-400 mt-1">{stats.ongoingProjectsCount}</p>
+          <p className="text-[10px] sm:text-xs text-slate-400 dark:text-slate-500 mt-1 truncate">{t('ongoingDesc')}</p>
         </div>
-        <div className="p-3 bg-yellow-100 text-yellow-600 rounded-full">
-          <Briefcase size={24} />
-        </div>
-      </div>
-
-      <div className="bg-white rounded-xl shadow-sm p-6 border-b-4 border-red-500 flex items-center justify-between">
-        <div>
-          <p className="text-sm text-slate-500 font-medium mb-1">{t('retentionPayable')}</p>
-          <p className="text-3xl font-bold text-red-600">{stats.retentionPayableCount}</p>
-        </div>
-        <div className="p-3 bg-red-100 text-red-600 rounded-full">
-          <Hourglass size={24} />
+        <div className="p-2 sm:p-3 bg-amber-50 dark:bg-amber-950/30 text-amber-500 dark:text-amber-400 rounded-full ml-2 flex-shrink-0">
+          <HardHat className="w-5 h-5 sm:w-6 sm:h-6" />
         </div>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm p-6 border-b-4 border-emerald-500 flex items-center justify-between">
-        <div>
-          <p className="text-sm text-slate-500 font-medium mb-1">{t('totalAllocation')}</p>
-          <p className="text-3xl font-bold text-emerald-600">
-             {stats.totalAllocation.toFixed(2)} <span className="text-sm font-normal text-slate-500">M</span>
-          </p>
+      {/* Retention Card */}
+      <div className="bg-white dark:bg-slate-900/50 backdrop-blur-md border border-slate-100 dark:border-slate-800/80 p-3.5 sm:p-4 rounded-xl flex items-center justify-between shadow-sm transition-all duration-200 hover:shadow-md hover:border-slate-200 dark:hover:border-slate-700/80">
+        <div className="flex-1 min-w-0">
+          <p className="text-xs sm:text-sm font-semibold text-slate-500 dark:text-slate-400 truncate">{t('retentionPayable')}</p>
+          <p className="text-xl sm:text-2xl font-bold text-rose-600 dark:text-rose-400 mt-1">{stats.retentionPayableCount}</p>
+          <p className="text-[10px] sm:text-xs text-slate-400 dark:text-slate-500 mt-1 truncate">{t('retentionPayableDesc')}</p>
         </div>
-        <div className="p-3 bg-emerald-100 text-emerald-600 rounded-full">
-          <DollarSign size={24} />
+        <div className="p-2 sm:p-3 bg-rose-50 dark:bg-rose-950/30 text-rose-500 dark:text-rose-450 rounded-full ml-2 flex-shrink-0">
+          <Hourglass className="w-5 h-5 sm:w-6 sm:h-6" />
         </div>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm p-6 border-b-4 border-blue-500 flex items-center justify-between bg-blue-50">
-        <div>
-          <p className="text-sm text-blue-800 font-medium mb-1">{t('completedProjects')}</p>
-          <p className="text-3xl font-bold text-blue-700">{stats.completedProjectsCount}</p>
+      {/* Allocation Card */}
+      <div className="bg-white dark:bg-slate-900/50 backdrop-blur-md border border-slate-100 dark:border-slate-800/80 p-3.5 sm:p-4 rounded-xl flex items-center justify-between shadow-sm transition-all duration-200 hover:shadow-md hover:border-slate-200 dark:hover:border-slate-700/80">
+        <div className="flex-1 min-w-0">
+          <p className="text-xs sm:text-sm font-semibold text-slate-500 dark:text-slate-400 truncate">{t('totalAllocation')}</p>
+          <p className="text-xl sm:text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1 truncate">{formattedAllocation}</p>
+          <p className="text-[10px] sm:text-xs text-slate-400 dark:text-slate-500 mt-1 truncate">{t('allocationDesc')}</p>
         </div>
-        <div className="p-3 bg-blue-100 text-blue-600 rounded-full">
-          <CheckCircle2 size={24} />
+        <div className="p-2 sm:p-3 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-450 rounded-full ml-2 flex-shrink-0">
+          <DollarSign className="w-5 h-5 sm:w-6 sm:h-6" />
+        </div>
+      </div>
+
+      {/* Completed Card */}
+      <div className="bg-white dark:bg-slate-900/50 backdrop-blur-md border border-slate-100 dark:border-slate-800/80 p-3.5 sm:p-4 rounded-xl flex items-center justify-between shadow-sm transition-all duration-200 hover:shadow-md hover:border-slate-200 dark:hover:border-slate-700/80">
+        <div className="flex-1 min-w-0">
+          <p className="text-xs sm:text-sm font-semibold text-slate-500 dark:text-slate-400 truncate">{t('completedProjects')}</p>
+          <p className="text-xl sm:text-2xl font-bold text-blue-600 dark:text-blue-400 mt-1">{stats.completedProjectsCount}</p>
+          <p className="text-[10px] sm:text-xs text-slate-400 dark:text-slate-500 mt-1 truncate">{t('completedDesc')}</p>
+        </div>
+        <div className="p-2 sm:p-3 bg-blue-50 dark:bg-blue-950/30 text-blue-500 dark:text-blue-400 rounded-full ml-2 flex-shrink-0">
+          <CheckCircle2 className="w-5 h-5 sm:w-6 sm:h-6" />
         </div>
       </div>
     </div>

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useLanguage } from './context/LanguageContext';
 import { useProjects } from './hooks/useProjects';
 import KPIDashboard from './components/KPIDashboard';
@@ -9,7 +9,7 @@ import AnalyticsView from './components/AnalyticsView';
 import ProjectFormModal from './components/ProjectFormModal';
 import ProjectDetailModal from './components/ProjectDetailModal';
 import PhotoViewerModal from './components/PhotoViewerModal';
-import { LayoutGrid, TableProperties, BarChart3, Globe, Landmark } from 'lucide-react';
+import { LayoutGrid, TableProperties, BarChart3, Globe, Landmark, Sun, Moon } from 'lucide-react';
 
 const AppContent = () => {
   const { t, language, setLanguage } = useLanguage();
@@ -22,6 +22,18 @@ const AppContent = () => {
   const [selectedYear, setSelectedYear] = useState('All');
   const [selectedRetentionFilter, setSelectedRetentionFilter] = useState('All');
   const [selectedProjectType, setSelectedProjectType] = useState('All');
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem('theme') || 'light';
+  });
+
+  useEffect(() => {
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    localStorage.setItem('theme', theme);
+  }, [theme]);
 
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
@@ -111,42 +123,49 @@ const AppContent = () => {
   };
 
   return (
-    <div className="min-h-screen pb-12">
+    <div className="min-h-screen pb-12 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-200">
       {/* Header */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
+      <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-40 shadow-sm transition-colors duration-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <div className="w-8 h-8 bg-emerald-600 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-lg">P</span>
             </div>
-            <h1 className="text-lg font-bold text-slate-800 hidden sm:block">{t('appTitle')}</h1>
+            <h1 className="text-lg font-bold text-slate-800 dark:text-white hidden sm:block">{t('appTitle')}</h1>
           </div>
 
           <div className="flex items-center space-x-4">
             {/* View Toggles */}
-            <div className="flex bg-slate-100 p-1 rounded-lg">
-              <button onClick={() => setViewMode('table')} className={`p-1.5 rounded-md flex items-center justify-center transition-colors ${viewMode === 'table' ? 'bg-white shadow-sm text-emerald-600' : 'text-slate-500 hover:text-slate-700'}`} title={t('tableView')}>
+            <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-lg">
+              <button onClick={() => setViewMode('table')} className={`p-1.5 rounded-md flex items-center justify-center transition-colors ${viewMode === 'table' ? 'bg-white dark:bg-slate-700 shadow-sm text-emerald-600 dark:text-emerald-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`} title={t('tableView')}>
                 <TableProperties size={18} />
               </button>
-              <button onClick={() => setViewMode('kanban')} className={`p-1.5 rounded-md flex items-center justify-center transition-colors ${viewMode === 'kanban' ? 'bg-white shadow-sm text-emerald-600' : 'text-slate-500 hover:text-slate-700'}`} title={t('kanbanView')}>
+              <button onClick={() => setViewMode('kanban')} className={`p-1.5 rounded-md flex items-center justify-center transition-colors ${viewMode === 'kanban' ? 'bg-white dark:bg-slate-700 shadow-sm text-emerald-600 dark:text-emerald-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`} title={t('kanbanView')}>
                 <LayoutGrid size={18} />
               </button>
-              <button onClick={() => setViewMode('analytics')} className={`p-1.5 rounded-md flex items-center justify-center transition-colors ${viewMode === 'analytics' ? 'bg-white shadow-sm text-emerald-600' : 'text-slate-500 hover:text-slate-700'}`} title={t('analyticsView')}>
+              <button onClick={() => setViewMode('analytics')} className={`p-1.5 rounded-md flex items-center justify-center transition-colors ${viewMode === 'analytics' ? 'bg-white dark:bg-slate-700 shadow-sm text-emerald-600 dark:text-emerald-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`} title={t('analyticsView')}>
                 <BarChart3 size={18} />
               </button>
             </div>
 
-            {/* Language Toggle */}
-            <div className="flex items-center space-x-2 border-l border-slate-200 pl-4">
-              <Globe size={16} className="text-slate-400" />
+            {/* Theme Toggle & Language Toggle */}
+            <div className="flex items-center space-x-2 border-l border-slate-200 dark:border-slate-800 pl-4">
+              <button
+                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                className="p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer mr-1"
+                title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+              >
+                {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+              </button>
+              <Globe size={16} className="text-slate-400 dark:text-slate-500" />
               <select
                 value={language}
                 onChange={(e) => setLanguage(e.target.value)}
-                className="bg-transparent text-sm font-medium text-slate-700 focus:outline-none cursor-pointer"
+                className="bg-transparent text-sm font-medium text-slate-700 dark:text-slate-300 focus:outline-none cursor-pointer"
               >
-                <option value="en">EN</option>
-                <option value="si">සිං</option>
-                <option value="ta">தமிழ்</option>
+                <option value="en" className="dark:bg-slate-900 dark:text-slate-100">EN</option>
+                <option value="si" className="dark:bg-slate-900 dark:text-slate-100">සිං</option>
+                <option value="ta" className="dark:bg-slate-900 dark:text-slate-100">தமிழ்</option>
               </select>
             </div>
           </div>

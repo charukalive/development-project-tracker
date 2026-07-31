@@ -64,13 +64,13 @@ const ProjectFormModal = ({ isOpen, onClose, onSave, editingProject }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between p-6 border-b border-slate-100">
-          <h2 className="text-xl font-semibold text-slate-800">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 dark:bg-slate-950/65 backdrop-blur-sm">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-slate-100 dark:border-slate-800">
+        <div className="flex items-center justify-between p-6 border-b border-slate-100 dark:border-slate-800">
+          <h2 className="text-xl font-semibold text-slate-800 dark:text-white">
             {editingProject ? t('editProject') : t('addProject')}
           </h2>
-          <button onClick={onClose} className="p-2 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100 transition-colors">
+          <button onClick={onClose} className="p-2 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-350 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer">
             <X size={20} />
           </button>
         </div>
@@ -79,136 +79,136 @@ const ProjectFormModal = ({ isOpen, onClose, onSave, editingProject }) => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
 
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-slate-700 mb-1">{t('projectName')} *</label>
-              <input required name="name" defaultValue={editingProject?.name} type="text" className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-305 mb-1">{t('projectName')} *</label>
+              <input required name="name" defaultValue={editingProject?.name} type="text" className="w-full px-3 py-2 border border-slate-200 dark:border-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white dark:bg-slate-950 text-slate-850 dark:text-slate-100" />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">{t('gnDivision')} *</label>
-              <input required name="gnDivision" defaultValue={editingProject?.gnDivision} type="text" className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-305 mb-1">{t('gnDivision')} *</label>
+              <input required name="gnDivision" defaultValue={editingProject?.gnDivision} type="text" className="w-full px-3 py-2 border border-slate-200 dark:border-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white dark:bg-slate-950 text-slate-850 dark:text-slate-100" />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">{t('year')}</label>
-              <input name="year" defaultValue={editingProject?.year} type="text" className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-305 mb-1">{t('year')}</label>
+              <input name="year" defaultValue={editingProject?.year} type="text" className="w-full px-3 py-2 border border-slate-200 dark:border-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white dark:bg-slate-950 text-slate-850 dark:text-slate-100" />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">{t('program')} *</label>
-              <select name="program" required defaultValue={editingProject?.program || 'Decentralized Budget'} className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white">
-                <option value="Decentralized Budget">{t('decentralizedBudget')}</option>
-                <option value="District Development">{t('districtDevelopment')}</option>
-                <option value="Building Rehabilitation">{t('buildingRehabilitation')}</option>
-                <option value="Community Power">{t('communityPower')}</option>
-                <option value="Ministries">{t('ministries')}</option>
-                <option value="Provincial Councils">{t('provincialCouncils')}</option>
-                <option value="Other">{t('other')}</option>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-305 mb-1">{t('program')} *</label>
+              <select name="program" required defaultValue={editingProject?.program || 'Decentralized Budget'} className="w-full px-3 py-2 border border-slate-200 dark:border-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white dark:bg-slate-950 text-slate-850 dark:text-slate-100 cursor-pointer">
+                <option value="Decentralized Budget" className="dark:bg-slate-900 dark:text-slate-100">{t('decentralizedBudget')}</option>
+                <option value="District Development" className="dark:bg-slate-900 dark:text-slate-100">{t('districtDevelopment')}</option>
+                <option value="Building Rehabilitation" className="dark:bg-slate-900 dark:text-slate-100">{t('buildingRehabilitation')}</option>
+                <option value="Community Power" className="dark:bg-slate-900 dark:text-slate-100">{t('communityPower')}</option>
+                <option value="Ministries" className="dark:bg-slate-900 dark:text-slate-100">{t('ministries')}</option>
+                <option value="Provincial Councils" className="dark:bg-slate-900 dark:text-slate-100">{t('provincialCouncils')}</option>
+                <option value="Other" className="dark:bg-slate-900 dark:text-slate-100">{t('other')}</option>
               </select>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">{t('status')} *</label>
-              <select name="status" defaultValue={editingProject?.status || 'Not Approved'} className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white">
-                <option value="Not Approved">{t('notApproved')}</option>
-                <option value="Approved">{t('approved')}</option>
-                <option value="Estimating">{t('estimating')}</option>
-                <option value="Procurement">{t('procurement')}</option>
-                <option value="Contracted">{t('contracted')}</option>
-                <option value="Physical Progress 0-25%">{t('physical0to25')}</option>
-                <option value="Physical Progress 26-50%">{t('physical26to50')}</option>
-                <option value="Physical Progress 51-75%">{t('physical51to75')}</option>
-                <option value="Physical Progress 76-99%">{t('physical76to99')}</option>
-                <option value="Completed">{t('completed')}</option>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-305 mb-1">{t('status')} *</label>
+              <select name="status" defaultValue={editingProject?.status || 'Not Approved'} className="w-full px-3 py-2 border border-slate-200 dark:border-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white dark:bg-slate-950 text-slate-850 dark:text-slate-100 cursor-pointer">
+                <option value="Not Approved" className="dark:bg-slate-900 dark:text-slate-100">{t('notApproved')}</option>
+                <option value="Approved" className="dark:bg-slate-900 dark:text-slate-100">{t('approved')}</option>
+                <option value="Estimating" className="dark:bg-slate-900 dark:text-slate-100">{t('estimating')}</option>
+                <option value="Procurement" className="dark:bg-slate-900 dark:text-slate-100">{t('procurement')}</option>
+                <option value="Contracted" className="dark:bg-slate-900 dark:text-slate-100">{t('contracted')}</option>
+                <option value="Physical Progress 0-25%" className="dark:bg-slate-900 dark:text-slate-100">{t('physical0to25')}</option>
+                <option value="Physical Progress 26-50%" className="dark:bg-slate-900 dark:text-slate-100">{t('physical26to50')}</option>
+                <option value="Physical Progress 51-75%" className="dark:bg-slate-900 dark:text-slate-100">{t('physical51to75')}</option>
+                <option value="Physical Progress 76-99%" className="dark:bg-slate-900 dark:text-slate-100">{t('physical76to99')}</option>
+                <option value="Completed" className="dark:bg-slate-900 dark:text-slate-100">{t('completed')}</option>
               </select>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">{t('projectType')} *</label>
-              <select name="projectType" defaultValue={editingProject?.projectType || 'Construction'} className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white">
-                <option value="Construction">{t('construction')}</option>
-                <option value="Purchasing">{t('purchasing')}</option>
-                <option value="Machine repair">{t('machineRepair')}</option>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-305 mb-1">{t('projectType')} *</label>
+              <select name="projectType" defaultValue={editingProject?.projectType || 'Construction'} className="w-full px-3 py-2 border border-slate-200 dark:border-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white dark:bg-slate-950 text-slate-850 dark:text-slate-100 cursor-pointer">
+                <option value="Construction" className="dark:bg-slate-900 dark:text-slate-100">{t('construction')}</option>
+                <option value="Purchasing" className="dark:bg-slate-900 dark:text-slate-100">{t('purchasing')}</option>
+                <option value="Machine repair" className="dark:bg-slate-900 dark:text-slate-100">{t('machineRepair')}</option>
               </select>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">{t('allocation')} *</label>
-              <input required name="allocation" defaultValue={editingProject?.allocation} type="number" step="0.01" min="0" className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-305 mb-1">{t('allocation')} *</label>
+              <input required name="allocation" defaultValue={editingProject?.allocation} type="number" step="0.01" min="0" className="w-full px-3 py-2 border border-slate-200 dark:border-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white dark:bg-slate-950 text-slate-850 dark:text-slate-100" />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">{t('disbursed')} *</label>
-              <input required name="disbursed" defaultValue={editingProject?.disbursed} type="number" step="0.01" min="0" className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-305 mb-1">{t('disbursed')} *</label>
+              <input required name="disbursed" defaultValue={editingProject?.disbursed} type="number" step="0.01" min="0" className="w-full px-3 py-2 border border-slate-200 dark:border-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white dark:bg-slate-950 text-slate-850 dark:text-slate-100" />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">{t('financialProgress')}</label>
-              <input name="financialProgress" defaultValue={editingProject?.financialProgress} type="text" className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-305 mb-1">{t('financialProgress')}</label>
+              <input name="financialProgress" defaultValue={editingProject?.financialProgress} type="text" className="w-full px-3 py-2 border border-slate-200 dark:border-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white dark:bg-slate-950 text-slate-850 dark:text-slate-100" />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">{t('retentionAmount')}</label>
-              <input name="retentionAmount" defaultValue={editingProject?.retentionAmount} type="number" step="0.01" min="0" className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-305 mb-1">{t('retentionAmount')}</label>
+              <input name="retentionAmount" defaultValue={editingProject?.retentionAmount} type="number" step="0.01" min="0" className="w-full px-3 py-2 border border-slate-200 dark:border-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white dark:bg-slate-950 text-slate-850 dark:text-slate-100" />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">{t('retentionPeriodMonths')}</label>
-              <input name="retentionPeriodMonths" defaultValue={editingProject?.retentionPeriodMonths} type="number" min="0" className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-305 mb-1">{t('retentionPeriodMonths')}</label>
+              <input name="retentionPeriodMonths" defaultValue={editingProject?.retentionPeriodMonths} type="number" min="0" className="w-full px-3 py-2 border border-slate-200 dark:border-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white dark:bg-slate-950 text-slate-850 dark:text-slate-100" />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">{t('contractor')}</label>
-              <input name="contractor" defaultValue={editingProject?.contractor} type="text" className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-305 mb-1">{t('contractor')}</label>
+              <input name="contractor" defaultValue={editingProject?.contractor} type="text" className="w-full px-3 py-2 border border-slate-200 dark:border-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white dark:bg-slate-950 text-slate-850 dark:text-slate-100" />
             </div>
 
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-slate-700 mb-1">{t('specialRemarks')}</label>
-              <textarea name="specialRemarks" defaultValue={editingProject?.specialRemarks} rows="2" className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"></textarea>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-305 mb-1">{t('specialRemarks')}</label>
+              <textarea name="specialRemarks" defaultValue={editingProject?.specialRemarks} rows="2" className="w-full px-3 py-2 border border-slate-200 dark:border-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white dark:bg-slate-950 text-slate-850 dark:text-slate-100"></textarea>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">{t('startDate')} *</label>
-              <input required name="startDate" defaultValue={editingProject?.startDate} type="date" className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-305 mb-1">{t('startDate')} *</label>
+              <input required name="startDate" defaultValue={editingProject?.startDate} type="date" className="w-full px-3 py-2 border border-slate-200 dark:border-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white dark:bg-slate-950 text-slate-850 dark:text-slate-100" />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">{t('endDate')}</label>
-              <input name="endDate" defaultValue={editingProject?.endDate} type="date" className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-305 mb-1">{t('endDate')}</label>
+              <input name="endDate" defaultValue={editingProject?.endDate} type="date" className="w-full px-3 py-2 border border-slate-200 dark:border-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white dark:bg-slate-950 text-slate-850 dark:text-slate-100" />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">{t('projectDuration')}</label>
-              <input name="projectDuration" defaultValue={editingProject?.projectDuration} type="text" placeholder="e.g. 6 Months" className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-305 mb-1">{t('projectDuration')}</label>
+              <input name="projectDuration" defaultValue={editingProject?.projectDuration} type="text" placeholder="e.g. 6 Months" className="w-full px-3 py-2 border border-slate-200 dark:border-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white dark:bg-slate-950 text-slate-850 dark:text-slate-100" />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">{t('actualEndDate')}</label>
-              <input name="actualEndDate" defaultValue={editingProject?.actualEndDate} type="date" className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-305 mb-1">{t('actualEndDate')}</label>
+              <input name="actualEndDate" defaultValue={editingProject?.actualEndDate} type="date" className="w-full px-3 py-2 border border-slate-200 dark:border-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white dark:bg-slate-950 text-slate-850 dark:text-slate-100" />
             </div>
 
-            <div className="p-4 border-2 border-dashed border-slate-200 rounded-lg bg-slate-50">
-              <label className="block text-sm font-medium text-slate-700 mb-2 flex items-center gap-2">
+            <div className="p-4 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-lg bg-slate-50 dark:bg-slate-950/20">
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-305 mb-2 flex items-center gap-2">
                 <UploadCloud size={16} /> {t('beforePhoto')}
               </label>
-              <input name="beforeImageFile" type="file" accept="image/*" className="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 transition-colors" />
-              {editingProject?.beforeImage && <p className="text-xs text-emerald-600 mt-2">Current file attached.</p>}
+              <input name="beforeImageFile" type="file" accept="image/*" className="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-emerald-50 dark:file:bg-emerald-950/30 file:text-emerald-700 dark:file:text-emerald-400 hover:file:bg-emerald-100 transition-colors cursor-pointer" />
+              {editingProject?.beforeImage && <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-2">Current file attached.</p>}
             </div>
 
-            <div className="p-4 border-2 border-dashed border-slate-200 rounded-lg bg-slate-50">
-              <label className="block text-sm font-medium text-slate-700 mb-2 flex items-center gap-2">
+            <div className="p-4 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-lg bg-slate-50 dark:bg-slate-950/20">
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-305 mb-2 flex items-center gap-2">
                 <UploadCloud size={16} /> {t('afterPhoto')}
               </label>
-              <input name="afterImageFile" type="file" accept="image/*" className="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 transition-colors" />
-              {editingProject?.afterImage && <p className="text-xs text-emerald-600 mt-2">Current file attached.</p>}
+              <input name="afterImageFile" type="file" accept="image/*" className="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-emerald-50 dark:file:bg-emerald-950/30 file:text-emerald-700 dark:file:text-emerald-400 hover:file:bg-emerald-100 transition-colors cursor-pointer" />
+              {editingProject?.afterImage && <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-2">Current file attached.</p>}
             </div>
 
           </div>
 
-          <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
-            <button type="button" onClick={onClose} disabled={isUploading} className="px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-200 transition-colors disabled:opacity-50">
+          <div className="flex justify-end gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
+            <button type="button" onClick={onClose} disabled={isUploading} className="px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-200 transition-colors disabled:opacity-50 cursor-pointer">
               {t('cancel')}
             </button>
-            <button type="submit" disabled={isUploading} className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-emerald-600 border border-transparent rounded-lg hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors shadow-sm disabled:opacity-50">
+            <button type="submit" disabled={isUploading} className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-emerald-600 border border-transparent rounded-lg hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors shadow-sm disabled:opacity-50 cursor-pointer">
               {isUploading && <Loader2 size={16} className="animate-spin" />}
               {t('save')}
             </button>
