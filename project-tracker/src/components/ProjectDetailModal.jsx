@@ -108,11 +108,19 @@ const ProjectDetailModal = ({ isOpen, onClose, project }) => {
           <div className="border-t border-slate-100 pt-4 grid grid-cols-2 gap-4">
              <div>
               <p className="text-sm text-slate-500 mb-1">{t('startDate')}</p>
-              <p className="text-slate-800">{project.startDate}</p>
+              <p className="text-slate-800 font-medium">{project.startDate}</p>
             </div>
             <div>
               <p className="text-sm text-slate-500 mb-1">{t('endDate')}</p>
-              <p className="text-slate-800">{project.endDate || '-'}</p>
+              <p className="text-slate-800 font-medium">{project.endDate || '-'}</p>
+            </div>
+            <div>
+              <p className="text-sm text-slate-500 mb-1">{t('projectDuration')}</p>
+              <p className="text-slate-800 font-medium">{project.projectDuration || '-'}</p>
+            </div>
+            <div>
+              <p className="text-sm text-slate-500 mb-1">{t('actualEndDate')}</p>
+              <p className="text-slate-800 font-medium">{project.actualEndDate || '-'}</p>
             </div>
           </div>
         </div>

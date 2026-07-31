@@ -47,6 +47,8 @@ const ProjectFormModal = ({ isOpen, onClose, onSave, editingProject }) => {
         specialRemarks: formData.get('specialRemarks'),
         startDate: formData.get('startDate'),
         endDate: formData.get('endDate') || null,
+        projectDuration: formData.get('projectDuration') || '',
+        actualEndDate: formData.get('actualEndDate') || null,
         beforeImage: beforeImageURL,
         afterImage: afterImageURL,
       };
@@ -172,6 +174,16 @@ const ProjectFormModal = ({ isOpen, onClose, onSave, editingProject }) => {
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">{t('endDate')}</label>
               <input name="endDate" defaultValue={editingProject?.endDate} type="date" className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">{t('projectDuration')}</label>
+              <input name="projectDuration" defaultValue={editingProject?.projectDuration} type="text" placeholder="e.g. 6 Months" className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">{t('actualEndDate')}</label>
+              <input name="actualEndDate" defaultValue={editingProject?.actualEndDate} type="date" className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" />
             </div>
 
             <div className="p-4 border-2 border-dashed border-slate-200 rounded-lg bg-slate-50">

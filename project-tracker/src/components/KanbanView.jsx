@@ -9,7 +9,7 @@ const KanbanCard = ({ project, onEdit, onViewDetails, onPhotoView }) => {
   return (
     <div className="bg-white p-4 rounded-lg shadow-sm border border-slate-200 mb-3 hover:shadow-md transition-shadow">
       <div className="flex justify-between items-start mb-2">
-        <h4 className="font-semibold text-slate-800 text-sm leading-tight pr-2">
+        <h4 className="text-xs sm:text-sm font-semibold text-slate-800 leading-tight pr-2">
           <ExpandableText text={project.name} year={project.year} maxLength={60} />
         </h4>
         <div className="flex space-x-1">
