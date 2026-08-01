@@ -378,8 +378,8 @@ const AppContent = () => {
       <div className="bg-[#0d5c4b] text-white py-6 px-4 shadow-md border-b border-[#0b4d3f]">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center space-x-4">
-            <div className="w-12 h-12 bg-amber-500/10 border border-amber-500/30 text-amber-400 rounded-xl flex items-center justify-center flex-shrink-0 shadow-inner">
-              <Landmark size={28} />
+            <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 shadow-inner overflow-hidden bg-white/10 border border-white/20">
+              <img src="/logo.jpeg" alt="Logo" className="w-full h-full object-cover rounded-xl" />
             </div>
             <div>
               <div className="flex flex-wrap items-center gap-2">
