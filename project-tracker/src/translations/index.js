@@ -71,7 +71,7 @@ export const translations = {
     year: "Year",
     allocation: "Allocation (LKR M)",
     disbursed: "Disbursed (LKR M)",
-    contractor: "Contractor",
+    contractor: "Contractor/Society",
     financialProgress: "Financial Progress",
     retentionAmount: "Retention Amount",
     retentionPeriodMonths: "Retention Period (Months)",
@@ -110,12 +110,15 @@ export const translations = {
     password: "Password",
     loginError: "Invalid email or password",
     loginTitle: "Login as Admin",
-    submitting: "Logging in..."
+    submitting: "Logging in...",
+    retentionPaid: "Retention Paid",
+    markAsPaid: "Mark as Paid",
+    markAsUnpaid: "Mark as Unpaid"
   },
   si: {
     appTitle: "ප්‍රාදේශීය ව්‍යාපෘති කළමනාකරණ පද්ධතිය",
     headerTitle: "ගල්නෑව ප්‍රාදේශීය ලේකම් කාර්යාලය",
-    headerSubtitle: "සංවර්ධන ව්‍යාපෘති, ප්‍රගතිය සහ අතරැඳවුම් මුදල් (Retention) කළමනාකරණය",
+    headerSubtitle: "සංවර්ධන ව්‍යාපෘති, ප්‍රගතිය සහ අතරැඳවුම් මුදල් කළමනාකරණය",
     headerPill: "ව්‍යාපෘති පද්ධතිය",
     ongoingDesc: "ව්‍යාපෘති ප්‍රගතියේ පවතී",
     retentionPayableDesc: "ගෙවීමට ඇති අතරැඳවුම් මුදල් ව්‍යාපෘති",
@@ -178,7 +181,7 @@ export const translations = {
     year: "වර්ෂය",
     allocation: "වෙන්කළ මුදල (රු. මිලියන)",
     disbursed: "ගෙවූ මුදල (රු. මිලියන)",
-    contractor: "කොන්ත්‍රාත්කරු",
+    contractor: "කොන්ත්‍රාත්කරු/සමිතිය",
     financialProgress: "මූල්‍ය ප්‍රගතිය",
     retentionAmount: "අතරැඳවුම් මුදල",
     retentionPeriodMonths: "අතරැඳවුම් කාලය (මාස)",
@@ -216,7 +219,10 @@ export const translations = {
     password: "මුරපදය",
     loginError: "ඊමේල් ලිපිනය හෝ මුරපදය වැරදිය",
     loginTitle: "පාලක ලෙස ලොග් වන්න",
-    submitting: "ලොග් වෙමින්..."
+    submitting: "ලොග් වෙමින්...",
+    retentionPaid: "අතරැඳවුම් ගෙවා ඇත",
+    markAsPaid: "ගෙවූ බව ලකුණු කරන්න",
+    markAsUnpaid: "නොගෙවූ බව ලකුණු කරන්න"
   },
   ta: {
     appTitle: "பிராந்திய அபிவிருத்தி திட்ட முகாமைத்துவ அமைப்பு",
@@ -284,7 +290,7 @@ export const translations = {
     year: "ஆண்டு",
     allocation: "ஒதுக்கீடு (ரூ. மில்லியன்)",
     disbursed: "வழங்கப்பட்டது (ரூ. மில்லியன்)",
-    contractor: "ஒப்பந்ததாரர்",
+    contractor: "ஒப்பந்ததாரர்/சங்கம்",
     financialProgress: "நிதி முன்னேற்றம்",
     retentionAmount: "தக்கவைப்பு தொகை",
     retentionPeriodMonths: "தக்கவைப்பு காலம் (மாதங்கள்)",
@@ -322,6 +328,9 @@ export const translations = {
     password: "கடவுச்சொல்",
     loginError: "மின்னஞ்சல் அல்லது கடவுச்சொல் தவறானது",
     loginTitle: "நிர்வாகியாக உள்நுழையவும்",
-    submitting: "உள்நுழைகிறது..."
+    submitting: "உள்நுழைகிறது...",
+    retentionPaid: "தக்கவைப்பு பணம் செலுத்தப்பட்டது",
+    markAsPaid: "செலுத்தப்பட்டதாகக் குறிக்கவும்",
+    markAsUnpaid: "செலுத்தப்படாததாகக் குறிக்கவும்"
   }
 };

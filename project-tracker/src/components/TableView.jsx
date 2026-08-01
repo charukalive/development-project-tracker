@@ -132,26 +132,34 @@ const TableView = ({ projects, onEdit, onViewDetails, onDelete, onPhotoView, isA
                     <div className="text-slate-655 dark:text-slate-350"><span className="text-slate-400 dark:text-slate-505 text-xs mr-1">End:</span>{project.endDate || '-'}</div>
                   </td>
                   <td className="p-4 align-top text-center">
-                    {retentionStatus === "ongoing" && (
-                       <span className="inline-flex items-center px-2.5 py-1.5 rounded bg-yellow-100 dark:bg-yellow-950/20 text-yellow-800 dark:text-yellow-400 text-xs font-medium">
-                         {t('ongoing')}
-                       </span>
-                    )}
-                    {retentionStatus === "payable" && (
-                       <span className="inline-flex flex-col items-center justify-center p-2 rounded bg-red-100 dark:bg-red-950/20 text-red-800 dark:text-red-400 text-xs font-medium">
-                         <div className="w-2 h-2 rounded-full bg-red-500 mb-1"></div>
-                         {t('payable')}
-                       </span>
-                    )}
-                    {retentionStatus === null && (
-                      <div className={`inline-flex flex-col items-center justify-center p-2 rounded text-xs font-medium ${isRetentionExceeded ? 'bg-red-100 dark:bg-red-950/20 text-red-800 dark:text-red-400' : 'bg-green-100 dark:bg-green-950/20 text-green-800 dark:text-green-400'}`}>
-                         <div className={`w-2 h-2 rounded-full mb-1 ${isRetentionExceeded ? 'bg-red-500' : 'bg-green-500'}`}></div>
-                         {isRetentionExceeded ? (
-                            <span>{t('payable')} ({t('days')} {daysRemaining} {t('ago')})</span>
-                         ) : (
-                            <span>{t('remaining')} {t('days')} {daysRemaining} {yearsRemaining > 0 ? `(${t('years')} ${yearsRemaining})` : ''}</span>
-                         )}
-                      </div>
+                    {project.retentionPaid ? (
+                      <span className="inline-flex items-center px-2.5 py-1.5 rounded bg-emerald-100 dark:bg-emerald-950/20 text-emerald-800 dark:text-emerald-400 text-xs font-semibold border border-emerald-250 dark:border-emerald-900/30">
+                        {t('retentionPaid')}
+                      </span>
+                    ) : (
+                      <>
+                        {retentionStatus === "ongoing" && (
+                           <span className="inline-flex items-center px-2.5 py-1.5 rounded bg-yellow-100 dark:bg-yellow-950/20 text-yellow-800 dark:text-yellow-400 text-xs font-medium">
+                             {t('ongoing')}
+                           </span>
+                        )}
+                        {retentionStatus === "payable" && (
+                           <span className="inline-flex flex-col items-center justify-center p-2 rounded bg-red-100 dark:bg-red-950/20 text-red-800 dark:text-red-400 text-xs font-medium">
+                             <div className="w-2 h-2 rounded-full bg-red-500 mb-1"></div>
+                             {t('payable')}
+                           </span>
+                        )}
+                        {retentionStatus === null && (
+                          <div className={`inline-flex flex-col items-center justify-center p-2 rounded text-xs font-medium ${isRetentionExceeded ? 'bg-red-100 dark:bg-red-950/20 text-red-800 dark:text-red-400' : 'bg-green-100 dark:bg-green-950/20 text-green-800 dark:text-green-400'}`}>
+                             <div className={`w-2 h-2 rounded-full mb-1 ${isRetentionExceeded ? 'bg-red-500' : 'bg-green-500'}`}></div>
+                             {isRetentionExceeded ? (
+                                <span>{t('payable')} ({t('days')} {daysRemaining} {t('ago')})</span>
+                             ) : (
+                                <span>{t('remaining')} {t('days')} {daysRemaining} {yearsRemaining > 0 ? `(${t('years')} ${yearsRemaining})` : ''}</span>
+                             )}
+                          </div>
+                        )}
+                      </>
                     )}
                     {project.retentionAmount != null && project.retentionAmount > 0 && (
                         <div className="text-xs text-slate-500 dark:text-slate-450 mt-1 whitespace-nowrap">

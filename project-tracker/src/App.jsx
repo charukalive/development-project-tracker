@@ -73,7 +73,9 @@ const AppContent = () => {
 
       let matchesRetention = true;
       if (selectedRetentionFilter !== 'All') {
-        if (p.status === 'Completed' && p.endDate && p.retentionPeriodMonths) {
+        if (p.retentionPaid) {
+          matchesRetention = false; // Exclude resolved retention projects from exceeded/passing soon lists
+        } else if (p.status === 'Completed' && p.endDate && p.retentionPeriodMonths) {
           const endDate = new Date(p.endDate);
           const retentionDate = new Date(endDate);
           retentionDate.setMonth(retentionDate.getMonth() + parseInt(p.retentionPeriodMonths, 10));
@@ -241,6 +243,18 @@ const AppContent = () => {
       updateProject(projectData);
     } else {
       addProject(projectData);
+    }
+  };
+
+  const handleToggleRetentionPaid = async (projectId, isPaid) => {
+    try {
+      await updateProject({ id: projectId, retentionPaid: isPaid });
+      // Update selected project state if it is currently open in modal
+      if (selectedProject && selectedProject.id === projectId) {
+        setSelectedProject(prev => ({ ...prev, retentionPaid: isPaid }));
+      }
+    } catch (err) {
+      console.error("Error updating retention paid status:", err);
     }
   };
 
@@ -458,6 +472,8 @@ const AppContent = () => {
         isOpen={isDetailOpen}
         onClose={() => setIsDetailOpen(false)}
         project={selectedProject}
+        isAdmin={isAdmin}
+        onToggleRetentionPaid={handleToggleRetentionPaid}
       />
       <PhotoViewerModal
         isOpen={isPhotoViewerOpen}
