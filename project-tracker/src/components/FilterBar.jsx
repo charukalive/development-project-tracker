@@ -22,7 +22,8 @@ const FilterBar = ({
   projectTypeOptions,
   onAddProject,
   onPrintPDF,
-  filteredProjects
+  filteredProjects,
+  isAdmin
 }) => {
   const { t } = useLanguage();
 
@@ -140,13 +141,15 @@ const FilterBar = ({
             <span className="truncate">{t('exportCSV')}</span>
           </button>
         </div>
-        <button
-          onClick={onAddProject}
-          className="w-full sm:w-auto flex items-center justify-center space-x-2 bg-emerald-600 text-white px-4 py-2 rounded-lg text-xs sm:text-sm font-medium hover:bg-emerald-700 hover:scale-[1.03] active:scale-95 group transition-all duration-200 shadow-sm cursor-pointer"
-        >
-          <Plus size={16} className="group-hover:rotate-90 transition-transform duration-300 flex-shrink-0" />
-          <span className="truncate">{t('addProject')}</span>
-        </button>
+        {isAdmin && (
+          <button
+            onClick={onAddProject}
+            className="w-full sm:w-auto flex items-center justify-center space-x-2 bg-emerald-600 text-white px-4 py-2 rounded-lg text-xs sm:text-sm font-medium hover:bg-emerald-700 hover:scale-[1.03] active:scale-95 group transition-all duration-200 shadow-sm cursor-pointer"
+          >
+            <Plus size={16} className="group-hover:rotate-90 transition-transform duration-300 flex-shrink-0" />
+            <span className="truncate">{t('addProject')}</span>
+          </button>
+        )}
       </div>
 
     </div>

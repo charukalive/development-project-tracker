@@ -228,6 +228,14 @@ const AppContent = () => {
     printWindow.document.close();
   };
 
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (err) {
+      console.error("Error logging out", err);
+    }
+  };
+
   const handleSaveProject = (projectData) => {
     if (editingProject) {
       updateProject(projectData);
@@ -242,13 +250,11 @@ const AppContent = () => {
       <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-40 shadow-sm transition-colors duration-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-emerald-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">P</span>
-            </div>
+            <img src="/logo.jpeg" alt="Logo" className="w-8 h-8 rounded-lg object-cover shadow-xs border border-slate-200 dark:border-slate-800" />
             <h1 className="text-lg font-bold text-slate-800 dark:text-white hidden sm:block">{t('appTitle')}</h1>
           </div>
 
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-3 sm:space-x-4">
             {/* View Toggles */}
             <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-lg">
               <button onClick={() => setViewMode('table')} className={`p-1.5 rounded-md flex items-center justify-center transition-colors ${viewMode === 'table' ? 'bg-white dark:bg-slate-700 shadow-sm text-emerald-600 dark:text-emerald-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`} title={t('tableView')}>
@@ -261,6 +267,39 @@ const AppContent = () => {
                 <BarChart3 size={18} />
               </button>
             </div>
+
+            {/* Guest / Admin Mode Switch */}
+            {isAdmin ? (
+              <div className="flex items-center space-x-1.5 sm:space-x-2">
+                <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-100 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900/30 uppercase">
+                  <Unlock size={10} className="mr-1" />
+                  <span className="hidden sm:inline">{t('adminMode')}</span>
+                </span>
+                <button
+                  onClick={handleLogout}
+                  className="p-1 sm:px-2 sm:py-1 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg transition-colors cursor-pointer flex items-center gap-1"
+                  title={t('logout')}
+                >
+                  <LogOut size={14} />
+                  <span className="hidden sm:inline text-xs font-semibold">{t('logout')}</span>
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center space-x-1.5 sm:space-x-2">
+                <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-100 dark:bg-amber-950/40 text-amber-800 dark:text-amber-400 border border-amber-200 dark:border-amber-900/30 uppercase">
+                  <Lock size={10} className="mr-1" />
+                  <span className="hidden sm:inline">{t('guestMode')}</span>
+                </span>
+                <button
+                  onClick={() => setIsLoginOpen(true)}
+                  className="p-1 sm:px-2 sm:py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors shadow-xs cursor-pointer flex items-center gap-1 animate-pulse"
+                  title={t('loginToAdmin')}
+                >
+                  <Lock size={14} />
+                  <span className="hidden sm:inline text-xs font-semibold">{t('loginToAdmin')}</span>
+                </button>
+              </div>
+            )}
 
             {/* Theme Toggle & Language Toggle */}
             <div className="flex items-center space-x-2 border-l border-slate-200 dark:border-slate-800 pl-4 relative">
@@ -368,6 +407,7 @@ const AppContent = () => {
               onAddProject={handleOpenAdd}
               onPrintPDF={handlePrintPDF}
               filteredProjects={filteredProjects}
+              isAdmin={isAdmin}
             />
 
             <KPIDashboard projects={filteredProjects} />
@@ -382,6 +422,7 @@ const AppContent = () => {
                     onViewDetails={handleOpenDetails}
                     onDelete={deleteProject}
                     onPhotoView={handleOpenPhotoView}
+                    isAdmin={isAdmin}
                   />
                 </div>
               )}
@@ -392,6 +433,7 @@ const AppContent = () => {
                     onEdit={handleOpenEdit}
                     onViewDetails={handleOpenDetails}
                     onPhotoView={handleOpenPhotoView}
+                    isAdmin={isAdmin}
                   />
                 </div>
               )}

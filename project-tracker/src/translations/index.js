@@ -101,8 +101,16 @@ export const translations = {
     showLess: "less",
     printPDF: "Print PDF",
     splitView: "Split Slider",
-    sideBySide: "Side-by-Side",
-    dragPrompt: "Drag slider to compare"
+    dragPrompt: "Drag slider to compare",
+    adminMode: "Admin Mode",
+    guestMode: "Guest Mode",
+    loginToAdmin: "Login",
+    logout: "Logout",
+    email: "Email Address",
+    password: "Password",
+    loginError: "Invalid email or password",
+    loginTitle: "Login as Admin",
+    submitting: "Logging in..."
   },
   si: {
     appTitle: "ප්‍රාදේශීය ව්‍යාපෘති කළමනාකරණ පද්ධතිය",
@@ -199,8 +207,16 @@ export const translations = {
     showLess: "අඩු කරන්න",
     printPDF: "PDF මුද්‍රණය",
     splitView: "බෙදුණු දසුන",
-    sideBySide: "පැත්තෙන් පැත්ත දසුන",
-    dragPrompt: "සංසන්දනය කිරීමට ස්ලයිඩරය දෙපසට අදින්න"
+    dragPrompt: "සංසන්දනය කිරීමට ස්ලයිඩරය දෙපසට අදින්න",
+    adminMode: "පාලක ප්‍රකාරය",
+    guestMode: "අමුත්තන්ගේ ප්‍රකාරය",
+    loginToAdmin: "ඇතුල් වන්න",
+    logout: "ඉවත් වන්න",
+    email: "ඊමේල් ලිපිනය",
+    password: "මුරපදය",
+    loginError: "ඊමේල් ලිපිනය හෝ මුරපදය වැරදිය",
+    loginTitle: "පාලක ලෙස ලොග් වන්න",
+    submitting: "ලොග් වෙමින්..."
   },
   ta: {
     appTitle: "பிராந்திய அபிவிருத்தி திட்ட முகாமைத்துவ அமைப்பு",
@@ -297,7 +313,15 @@ export const translations = {
     showLess: "குறைவாக",
     printPDF: "PDF அச்சிடுக",
     splitView: "பிளவு ஸ்லைடர்",
-    sideBySide: "பக்கவாட்டு காட்சி",
-    dragPrompt: "ஒப்பிட ஸ்லைடரை இழுக்கவும்"
+    dragPrompt: "ஒப்பிட ஸ்லைடரை இழுக்கவும்",
+    adminMode: "நிர்வாகி பயன்முறை",
+    guestMode: "விருந்தினர் பயன்முறை",
+    loginToAdmin: "உள்நுழை",
+    logout: "வெளியேறு",
+    email: "மின்னஞ்சல் முகவரி",
+    password: "கடவுச்சொல்",
+    loginError: "மின்னஞ்சல் அல்லது கடவுச்சொல் தவறானது",
+    loginTitle: "நிர்வாகியாக உள்நுழையவும்",
+    submitting: "உள்நுழைகிறது..."
   }
 };
