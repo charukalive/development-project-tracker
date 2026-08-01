@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useLanguage } from './context/LanguageContext';
 import { useProjects } from './hooks/useProjects';
+import { useAuth } from './context/AuthContext';
 import KPIDashboard from './components/KPIDashboard';
 import FilterBar from './components/FilterBar';
 import TableView from './components/TableView';
@@ -9,11 +10,13 @@ import AnalyticsView from './components/AnalyticsView';
 import ProjectFormModal from './components/ProjectFormModal';
 import ProjectDetailModal from './components/ProjectDetailModal';
 import PhotoViewerModal from './components/PhotoViewerModal';
-import { LayoutGrid, TableProperties, BarChart3, Globe, Landmark, Sun, Moon, ChevronDown, Check } from 'lucide-react';
+import AdminLoginModal from './components/AdminLoginModal';
+import { LayoutGrid, TableProperties, BarChart3, Globe, Landmark, Sun, Moon, ChevronDown, Check, Unlock, Lock, LogOut } from 'lucide-react';
 
 const AppContent = () => {
   const { t, language, setLanguage } = useLanguage();
   const { projects, addProject, updateProject, deleteProject, loading } = useProjects();
+  const { user, isAdmin, logout } = useAuth();
 
   const [viewMode, setViewMode] = useState('table'); // table, kanban, analytics
   const [searchTerm, setSearchTerm] = useState('');
@@ -22,6 +25,7 @@ const AppContent = () => {
   const [selectedYear, setSelectedYear] = useState('All');
   const [selectedRetentionFilter, setSelectedRetentionFilter] = useState('All');
   const [selectedProjectType, setSelectedProjectType] = useState('All');
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem('theme') || 'light';
   });
@@ -479,6 +483,10 @@ const AppContent = () => {
         isOpen={isPhotoViewerOpen}
         onClose={() => setIsPhotoViewerOpen(false)}
         project={selectedProject}
+      />
+      <AdminLoginModal
+        isOpen={isLoginOpen}
+        onClose={() => setIsLoginOpen(false)}
       />
     </div>
   );
