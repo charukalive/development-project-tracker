@@ -1,11 +1,12 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
-const COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4'];
+const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#ec4899', '#6366f1'];
 
 const AnalyticsView = ({ projects }) => {
   const { t } = useLanguage();
+  const [gnChartView, setGnChartView] = useState('bar');
   
   const isDark = document.documentElement.classList.contains('dark');
   const gridColor = isDark ? '#334155' : '#e2e8f0';
@@ -36,16 +37,27 @@ const AnalyticsView = ({ projects }) => {
     }));
   }, [projects, t]);
 
-  const gnData = useMemo(() => {
+  const sortedGnData = useMemo(() => {
     const data = {};
     projects.forEach(p => {
-      if (!data[p.gnDivision]) {
-        data[p.gnDivision] = { name: p.gnDivision, value: 0 };
+      const gn = p.gnDivision ? p.gnDivision.trim() : 'Unassigned';
+      if (!data[gn]) {
+        data[gn] = { name: gn, value: 0 };
       }
-      data[p.gnDivision].value += Number(p.allocation);
+      data[gn].value += Number(p.allocation) || 0;
     });
-    return Object.values(data);
+    return Object.values(data).sort((a, b) => b.value - a.value);
   }, [projects]);
+
+  const topGnData = useMemo(() => {
+    if (sortedGnData.length <= 6) return sortedGnData;
+    const top5 = sortedGnData.slice(0, 5);
+    const othersValue = sortedGnData.slice(5).reduce((acc, curr) => acc + curr.value, 0);
+    return [
+      ...top5,
+      { name: 'වෙනත් වසම් (Other GNs)', value: othersValue }
+    ];
+  }, [sortedGnData]);
 
   // Program Progress Summary Table calculations
   const summaryTableData = useMemo(() => {
@@ -238,30 +250,92 @@ const AnalyticsView = ({ projects }) => {
           </div>
         </div>
 
+        {/* Cleaned GN Division Chart Card */}
         <div className="bg-white dark:bg-slate-900/50 backdrop-blur-md p-6 rounded-xl shadow-sm border border-slate-100 dark:border-slate-800/80 transition-colors duration-200">
-          <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100 mb-6">{t('allocationByGN')}</h3>
-          <div className="h-80 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={gnData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={100}
-                  fill="#8884d8"
-                  paddingAngle={5}
-                  dataKey="value"
-                  label={({name, percent}) => `${name} ${(percent * 100).toFixed(0)}%`}
-                  labelLine={false}
-                >
-                  {gnData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip formatter={(value) => [`${value.toFixed(2)} M`, 'Allocation']} contentStyle={{backgroundColor: tooltipBg, borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'}} labelStyle={{color: isDark ? '#f8fafc' : '#1e293b'}} />
-              </PieChart>
-            </ResponsiveContainer>
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100">{t('allocationByGN')}</h3>
+            <div className="flex bg-slate-100 dark:bg-slate-800 p-0.5 rounded-lg text-xs">
+              <button
+                onClick={() => setGnChartView('bar')}
+                className={`px-2.5 py-1 rounded-md font-medium transition-colors ${
+                  gnChartView === 'bar'
+                    ? 'bg-white dark:bg-slate-700 text-emerald-600 dark:text-emerald-400 shadow-xs'
+                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
+                }`}
+              >
+                Bar
+              </button>
+              <button
+                onClick={() => setGnChartView('pie')}
+                className={`px-2.5 py-1 rounded-md font-medium transition-colors ${
+                  gnChartView === 'pie'
+                    ? 'bg-white dark:bg-slate-700 text-emerald-600 dark:text-emerald-400 shadow-xs'
+                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
+                }`}
+              >
+                Pie
+              </button>
+            </div>
+          </div>
+
+          <div className="h-80 w-full overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-slate-800">
+            {gnChartView === 'bar' ? (
+              <div style={{ height: Math.max(300, sortedGnData.length * 36) }} className="w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart layout="vertical" data={sortedGnData} margin={{ top: 5, right: 30, left: 10, bottom: 5 }}>
+                    <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke={gridColor} />
+                    <XAxis type="number" axisLine={false} tickLine={false} tick={{fill: tickColor, fontSize: 11}} />
+                    <YAxis 
+                      type="category" 
+                      dataKey="name" 
+                      axisLine={false} 
+                      tickLine={false} 
+                      tick={{fill: tickColor, fontSize: 11}} 
+                      width={140} 
+                    />
+                    <Tooltip 
+                      formatter={(value) => [`Rs. ${Number(value).toFixed(2)} M`, 'Allocation']} 
+                      contentStyle={{backgroundColor: tooltipBg, borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'}} 
+                      labelStyle={{color: isDark ? '#f8fafc' : '#1e293b'}} 
+                    />
+                    <Bar dataKey="value" name="Allocation" fill="#3b82f6" radius={[0, 4, 4, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            ) : (
+              <div className="h-full w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={topGnData}
+                      cx="50%"
+                      cy="42%"
+                      innerRadius={55}
+                      outerRadius={85}
+                      paddingAngle={4}
+                      dataKey="value"
+                      label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
+                    >
+                      {topGnData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip 
+                      formatter={(value) => [`Rs. ${Number(value).toFixed(2)} M`, 'Allocation']} 
+                      contentStyle={{backgroundColor: tooltipBg, borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'}} 
+                      labelStyle={{color: isDark ? '#f8fafc' : '#1e293b'}} 
+                    />
+                    <Legend 
+                      iconType="circle" 
+                      layout="horizontal" 
+                      verticalAlign="bottom" 
+                      align="center" 
+                      wrapperStyle={{fontSize: '11px', color: tickColor, paddingTop: '10px'}} 
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            )}
           </div>
         </div>
       </div>
