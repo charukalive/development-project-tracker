@@ -11,25 +11,35 @@ import ProjectFormModal from './components/ProjectFormModal';
 import ProjectDetailModal from './components/ProjectDetailModal';
 import PhotoViewerModal from './components/PhotoViewerModal';
 import AdminLoginModal from './components/AdminLoginModal';
-import { LayoutGrid, TableProperties, BarChart3, Globe, Landmark, Sun, Moon, ChevronDown, Check, Unlock, Lock, LogOut } from 'lucide-react';
+import { LayoutGrid, TableProperties, BarChart3, Globe, Sun, Moon, ChevronDown, Check, Unlock, Lock, LogOut } from 'lucide-react';
 
 const AppContent = () => {
   const { t, language, setLanguage } = useLanguage();
   const { projects, addProject, updateProject, deleteProject, loading } = useProjects();
   const { user, isAdmin, logout } = useAuth();
 
-  const [viewMode, setViewMode] = useState('table'); // table, kanban, analytics
+  const [viewMode, setViewMode] = useState('table'); // 'table' | 'kanban' | 'analytics'
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedProgram, setSelectedProgram] = useState('All');
   const [selectedStatus, setSelectedStatus] = useState('All');
   const [selectedYear, setSelectedYear] = useState('All');
-  const [selectedRetentionFilter, setSelectedRetentionFilter] = useState('All');
   const [selectedProjectType, setSelectedProjectType] = useState('All');
+  const [selectedRetentionFilter, setSelectedRetentionFilter] = useState('All'); // 'All' | 'Exceeded' | 'PassingSoon'
+
+  // Modal States
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [editingProject, setEditingProject] = useState(null);
+  const [selectedProject, setSelectedProject] = useState(null);
+  const [photoViewerProject, setPhotoViewerProject] = useState(null);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
+
+  // Custom UI dropdown states
+  const [isLangMenuOpen, setIsLangMenuOpen] = useState(false);
+
+  // Dark Mode System State
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem('theme') || 'light';
   });
-  const [isLangMenuOpen, setIsLangMenuOpen] = useState(false);
 
   useEffect(() => {
     if (theme === 'dark') {
@@ -40,13 +50,7 @@ const AppContent = () => {
     localStorage.setItem('theme', theme);
   }, [theme]);
 
-  const [isFormOpen, setIsFormOpen] = useState(false);
-  const [isDetailOpen, setIsDetailOpen] = useState(false);
-  const [isPhotoViewerOpen, setIsPhotoViewerOpen] = useState(false);
-
-  const [editingProject, setEditingProject] = useState(null);
-  const [selectedProject, setSelectedProject] = useState(null);
-
+  // Derived Unique Filter Options
   const programOptions = useMemo(() => [...new Set(projects.map(p => p.program))], [projects]);
   const statusOptions = useMemo(() => [...new Set(projects.map(p => p.status))], [projects]);
   const yearOptions = useMemo(() => {
@@ -78,7 +82,7 @@ const AppContent = () => {
       let matchesRetention = true;
       if (selectedRetentionFilter !== 'All') {
         if (p.retentionPaid) {
-          matchesRetention = false; // Exclude resolved retention projects from exceeded/passing soon lists
+          matchesRetention = false; // Exclude resolved retention projects
         } else if (p.status === 'Completed' && p.endDate && p.retentionPeriodMonths) {
           const endDate = new Date(p.endDate);
           const retentionDate = new Date(endDate);
@@ -90,16 +94,36 @@ const AppContent = () => {
           if (selectedRetentionFilter === 'Exceeded') {
             matchesRetention = daysDiff < 0;
           } else if (selectedRetentionFilter === 'PassingSoon') {
-            matchesRetention = daysDiff >= 0 && daysDiff <= 60; // Approx 2 months
+            matchesRetention = daysDiff >= 0 && daysDiff <= 60;
           }
         } else {
-          matchesRetention = false; // Only completed projects with end date and retention period can match these filters
+          matchesRetention = false;
         }
       }
 
       return matchesSearch && matchesProgram && matchesStatus && matchesYear && matchesRetention && matchesProjectType;
     });
   }, [projects, searchTerm, selectedProgram, selectedStatus, selectedYear, selectedRetentionFilter, selectedProjectType]);
+
+  // Page 2 Requirement: Sort projects from Current Year (descending) -> Program -> GN Division
+  const sortedProjects = useMemo(() => {
+    return [...filteredProjects].sort((a, b) => {
+      // 1. Current/Latest Year descending
+      const yearA = parseInt(a.year, 10) || 0;
+      const yearB = parseInt(b.year, 10) || 0;
+      if (yearB !== yearA) return yearB - yearA;
+
+      // 2. Program type ascending
+      const progA = (a.program || '').toLowerCase();
+      const progB = (b.program || '').toLowerCase();
+      if (progA !== progB) return progA.localeCompare(progB);
+
+      // 3. GN Division ascending
+      const gnA = (a.gnDivision || '').toLowerCase();
+      const gnB = (b.gnDivision || '').toLowerCase();
+      return gnA.localeCompare(gnB);
+    });
+  }, [filteredProjects]);
 
   const handleOpenAdd = () => {
     setEditingProject(null);
@@ -111,27 +135,47 @@ const AppContent = () => {
     setIsFormOpen(true);
   };
 
-  const handleOpenDetails = (project) => {
-    setSelectedProject(project);
-    setIsDetailOpen(true);
-  };
+  const handleExportCSV = () => {
+    const headers = ['ID', 'Year', 'Project Name', 'GN Division', 'Program', 'Status', 'Project Type', 'Allocation (M)', 'Disbursed (M)', 'Contractor', 'Financial Progress', 'Retention Amount (Rs.)', 'Retention Period (Months)', 'Start Date', 'End Date', 'Project Period', 'Actual Completion Date', 'Special Remarks'];
+    const rows = sortedProjects.map(p => [
+      p.id,
+      p.year || '',
+      `"${p.name.replace(/"/g, '""')}"`,
+      `"${p.gnDivision.replace(/"/g, '""')}"`,
+      `"${p.program.replace(/"/g, '""')}"`,
+      `"${p.status.replace(/"/g, '""')}"`,
+      `"${(p.projectType || 'Construction').replace(/"/g, '""')}"`,
+      p.allocation,
+      p.disbursed,
+      `"${(p.contractor || '').replace(/"/g, '""')}"`,
+      `"${(p.financialProgress || '').replace(/"/g, '""')}"`,
+      p.retentionAmount != null ? p.retentionAmount : '',
+      p.retentionPeriodMonths || '',
+      p.startDate || '',
+      p.endDate || '',
+      `"${(p.projectDuration || '').replace(/"/g, '""')}"`,
+      p.actualEndDate || '',
+      `"${(p.specialRemarks || '').replace(/"/g, '""')}"`
+    ]);
 
-  const handleOpenPhotoView = (project) => {
-    setSelectedProject(project);
-    setIsPhotoViewerOpen(true);
+    const csvContent = 'data:text/csv;charset=utf-8,\uFEFF' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `Projects_Export_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const handlePrintPDF = () => {
     const printWindow = window.open('', '_blank');
-    if (!printWindow) {
-      alert("Please allow popups to generate the report.");
-      return;
-    }
+    if (!printWindow) return;
 
     const title = t('appTitle');
     const headerTitle = t('headerTitle');
     
-    const rows = filteredProjects.map(p => `
+    const rows = sortedProjects.map(p => `
       <tr style="border-bottom: 1px solid #e2e8f0;">
         <td style="padding: 10px 8px; text-align: left; font-size: 11px; font-weight: 500; color: #1e293b;">${p.name}</td>
         <td style="padding: 10px 8px; text-align: left; font-size: 11px; color: #475569;">${p.gnDivision}</td>
@@ -143,8 +187,8 @@ const AppContent = () => {
       </tr>
     `).join('');
 
-    const totalAlloc = filteredProjects.reduce((acc, p) => acc + Number(p.allocation), 0).toFixed(2);
-    const totalDisb = filteredProjects.reduce((acc, p) => acc + Number(p.disbursed), 0).toFixed(2);
+    const totalAlloc = sortedProjects.reduce((acc, p) => acc + Number(p.allocation), 0).toFixed(2);
+    const totalDisb = sortedProjects.reduce((acc, p) => acc + Number(p.disbursed), 0).toFixed(2);
 
     const html = `
       <html>
@@ -178,25 +222,23 @@ const AppContent = () => {
               <h1 class="secretariat-title">${headerTitle}</h1>
               <h2 class="app-title">${title}</h2>
             </div>
-            <button class="no-print btn-print" onclick="window.print()">
-              🖨️ ${t('printPDF')}
-            </button>
+            <button class="btn-print no-print" onclick="window.print()">${t('printPDF')}</button>
           </div>
           <div class="meta-grid">
             <div class="meta-item">
-              <span class="meta-label">Date Generated</span>
+              <span class="meta-label">${t('totalProjects')}</span>
+              <span class="meta-value">${sortedProjects.length}</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Report Date</span>
               <span class="meta-value">${new Date().toLocaleDateString()}</span>
             </div>
             <div class="meta-item">
-              <span class="meta-label">Total Projects</span>
-              <span class="meta-value">${filteredProjects.length}</span>
+              <span class="meta-label">${t('totalAllocation')}</span>
+              <span class="meta-value">Rs. ${totalAlloc} M</span>
             </div>
             <div class="meta-item">
-              <span class="meta-label">Total Allocation</span>
-              <span class="meta-value" style="color: #0f172a;">Rs. ${totalAlloc} M</span>
-            </div>
-            <div class="meta-item">
-              <span class="meta-label">Total Disbursed</span>
+              <span class="meta-label">${t('disbursedPayments')}</span>
               <span class="meta-value" style="color: #059669;">Rs. ${totalDisb} M</span>
             </div>
           </div>
@@ -250,26 +292,13 @@ const AppContent = () => {
     }
   };
 
-  const handleToggleRetentionPaid = async (projectId, isPaid) => {
-    try {
-      await updateProject({ id: projectId, retentionPaid: isPaid });
-      // Update selected project state if it is currently open in modal
-      if (selectedProject && selectedProject.id === projectId) {
-        setSelectedProject(prev => ({ ...prev, retentionPaid: isPaid }));
-      }
-    } catch (err) {
-      console.error("Error updating retention paid status:", err);
-    }
-  };
-
   return (
     <div className="min-h-screen pb-12 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-200">
-      {/* Header */}
+      {/* Top Controls Sticky Navigation Bar */}
       <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-40 shadow-sm transition-colors duration-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <img src="/logo.jpeg" alt="Logo" className="w-8 h-8 rounded-lg object-cover shadow-xs border border-slate-200 dark:border-slate-800" />
-            <h1 className="text-lg font-bold text-slate-800 dark:text-white hidden sm:block">{t('appTitle')}</h1>
+            {/* Kept top nav clean without duplicate logo */}
           </div>
 
           <div className="flex items-center space-x-3 sm:space-x-4">
@@ -374,26 +403,19 @@ const AppContent = () => {
         </div>
       </header>
 
-      {/* Galnewa Secretariat Header Banner */}
+      {/* Page 4 Requirement: Clean Header Banner with 1 Single Logo & 2 Topics */}
       <div className="bg-[#0d5c4b] text-white py-6 px-4 shadow-md border-b border-[#0b4d3f]">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="flex items-center space-x-4">
-            <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 shadow-inner overflow-hidden bg-white/10 border border-white/20">
-              <img src="/logo.jpeg" alt="Logo" className="w-full h-full object-cover rounded-xl" />
-            </div>
-            <div>
-              <div className="flex flex-wrap items-center gap-2">
-                <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-white font-sans">
-                  {t('headerTitle')}
-                </h1>
-                <span className="bg-[#0b4d3f] text-emerald-300 text-[10px] sm:text-xs font-semibold px-2 py-0.5 rounded-full border border-emerald-500/20 shadow-sm flex-shrink-0">
-                  {t('headerPill')}
-                </span>
-              </div>
-              <p className="text-xs sm:text-sm text-emerald-100/80 mt-1 font-normal leading-relaxed">
-                {t('headerSubtitle')}
-              </p>
-            </div>
+        <div className="max-w-7xl mx-auto flex items-center space-x-4">
+          <div className="w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0 shadow-md overflow-hidden bg-white/10 border border-white/20">
+            <img src="/logo.jpeg" alt="Logo" className="w-full h-full object-cover rounded-xl" />
+          </div>
+          <div>
+            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-white font-sans leading-tight">
+              {t('appTitle')}
+            </h1>
+            <h2 className="text-sm sm:text-base text-emerald-100 font-medium mt-0.5">
+              {t('headerTitle')}
+            </h2>
           </div>
         </div>
       </div>
@@ -404,7 +426,9 @@ const AppContent = () => {
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
           </div>
         ) : (
-          <>
+          <div className="space-y-6">
+            <KPIDashboard projects={projects} />
+            
             <FilterBar
               searchTerm={searchTerm}
               setSearchTerm={setSearchTerm}
@@ -414,54 +438,46 @@ const AppContent = () => {
               setSelectedStatus={setSelectedStatus}
               selectedYear={selectedYear}
               setSelectedYear={setSelectedYear}
-              selectedRetentionFilter={selectedRetentionFilter}
-              setSelectedRetentionFilter={setSelectedRetentionFilter}
               selectedProjectType={selectedProjectType}
               setSelectedProjectType={setSelectedProjectType}
+              selectedRetentionFilter={selectedRetentionFilter}
+              setSelectedRetentionFilter={setSelectedRetentionFilter}
               programOptions={programOptions}
               statusOptions={statusOptions}
               yearOptions={yearOptions}
               projectTypeOptions={projectTypeOptions}
-              onAddProject={handleOpenAdd}
+              onOpenAdd={handleOpenAdd}
+              onExportCSV={handleExportCSV}
               onPrintPDF={handlePrintPDF}
-              filteredProjects={filteredProjects}
               isAdmin={isAdmin}
             />
 
-            <KPIDashboard projects={filteredProjects} />
+            {viewMode === 'table' && (
+              <TableView
+                projects={sortedProjects}
+                onEdit={handleOpenEdit}
+                onViewDetails={(p) => setSelectedProject(p)}
+                onDelete={deleteProject}
+                onPhotoView={(p) => setPhotoViewerProject(p)}
+                isAdmin={isAdmin}
+              />
+            )}
 
-            {/* View Rendering */}
-            <div className="transition-all duration-300 ease-in-out">
-              {viewMode === 'table' && (
-                <div className="animate-fade-in">
-                  <TableView
-                    projects={filteredProjects}
-                    onEdit={handleOpenEdit}
-                    onViewDetails={handleOpenDetails}
-                    onDelete={deleteProject}
-                    onPhotoView={handleOpenPhotoView}
-                    isAdmin={isAdmin}
-                  />
-                </div>
-              )}
-              {viewMode === 'kanban' && (
-                <div className="animate-fade-in">
-                  <KanbanView
-                    projects={filteredProjects}
-                    onEdit={handleOpenEdit}
-                    onViewDetails={handleOpenDetails}
-                    onPhotoView={handleOpenPhotoView}
-                    isAdmin={isAdmin}
-                  />
-                </div>
-              )}
-              {viewMode === 'analytics' && (
-                <div className="animate-fade-in">
-                  <AnalyticsView projects={filteredProjects} />
-                </div>
-              )}
-            </div>
-          </>
+            {viewMode === 'kanban' && (
+              <KanbanView
+                projects={sortedProjects}
+                onEdit={handleOpenEdit}
+                onViewDetails={(p) => setSelectedProject(p)}
+                onDelete={deleteProject}
+                onPhotoView={(p) => setPhotoViewerProject(p)}
+                isAdmin={isAdmin}
+              />
+            )}
+
+            {viewMode === 'analytics' && (
+              <AnalyticsView projects={sortedProjects} />
+            )}
+          </div>
         )}
       </main>
 
@@ -472,18 +488,19 @@ const AppContent = () => {
         onSave={handleSaveProject}
         editingProject={editingProject}
       />
+
       <ProjectDetailModal
-        isOpen={isDetailOpen}
-        onClose={() => setIsDetailOpen(false)}
+        isOpen={!!selectedProject}
+        onClose={() => setSelectedProject(null)}
         project={selectedProject}
-        isAdmin={isAdmin}
-        onToggleRetentionPaid={handleToggleRetentionPaid}
       />
+
       <PhotoViewerModal
-        isOpen={isPhotoViewerOpen}
-        onClose={() => setIsPhotoViewerOpen(false)}
-        project={selectedProject}
+        isOpen={!!photoViewerProject}
+        onClose={() => setPhotoViewerProject(null)}
+        project={photoViewerProject}
       />
+
       <AdminLoginModal
         isOpen={isLoginOpen}
         onClose={() => setIsLoginOpen(false)}
@@ -492,4 +509,8 @@ const AppContent = () => {
   );
 };
 
-export default AppContent;
+const App = () => {
+  return <AppContent />;
+};
+
+export default App;

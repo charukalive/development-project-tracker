@@ -7,8 +7,11 @@ import { uploadImage } from '../utils/storage';
 const ProjectFormModal = ({ isOpen, onClose, onSave, editingProject }) => {
   const { t } = useLanguage();
   const [isUploading, setIsUploading] = useState(false);
+  const [projectType, setProjectType] = useState(editingProject?.projectType || 'Construction');
 
   if (!isOpen) return null;
+
+  const isPurchasing = projectType === 'Purchasing' || projectType === 'Purchases' || projectType === 'මිලදී ගැනීම්';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -30,20 +33,23 @@ const ProjectFormModal = ({ isOpen, onClose, onSave, editingProject }) => {
         afterImageURL = await uploadImage(afterImageFile);
       }
 
+      const selectedProjectType = formData.get('projectType') || 'Construction';
+      const isPurchaseType = selectedProjectType === 'Purchasing' || selectedProjectType === 'Purchases' || selectedProjectType === 'මිලදී ගැනීම්';
+
       const projectData = {
         id: editingProject ? editingProject.id : uuidv4(),
         name: formData.get('name'),
         gnDivision: formData.get('gnDivision'),
         program: formData.get('program'),
         status: formData.get('status'),
-        projectType: formData.get('projectType') || 'Construction',
+        projectType: selectedProjectType,
         year: formData.get('year'),
         allocation: parseFloat(formData.get('allocation')) || 0,
         disbursed: parseFloat(formData.get('disbursed')) || 0,
         contractor: formData.get('contractor'),
         financialProgress: formData.get('financialProgress'),
-        retentionAmount: parseFloat(formData.get('retentionAmount')) || 0,
-        retentionPeriodMonths: formData.get('retentionPeriodMonths') ? parseInt(formData.get('retentionPeriodMonths')) : '',
+        retentionAmount: isPurchaseType ? 0 : (parseFloat(formData.get('retentionAmount')) || 0),
+        retentionPeriodMonths: isPurchaseType ? '' : (formData.get('retentionPeriodMonths') ? parseInt(formData.get('retentionPeriodMonths')) : ''),
         specialRemarks: formData.get('specialRemarks'),
         startDate: formData.get('startDate'),
         endDate: formData.get('endDate') || null,
@@ -51,8 +57,8 @@ const ProjectFormModal = ({ isOpen, onClose, onSave, editingProject }) => {
         actualEndDate: formData.get('actualEndDate') || null,
         beforeImage: beforeImageURL,
         afterImage: afterImageURL,
-        // Preserve retentionPaid status on submit
-        retentionPaid: editingProject?.retentionPaid || false,
+        // Admin editable retentionPaid toggle inside Edit modal
+        retentionPaid: isPurchaseType ? false : (formData.get('retentionPaid') === 'on'),
       };
 
       onSave(projectData);
@@ -126,7 +132,12 @@ const ProjectFormModal = ({ isOpen, onClose, onSave, editingProject }) => {
 
             <div>
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{t('projectType')} *</label>
-              <select name="projectType" defaultValue={editingProject?.projectType || 'Construction'} className="w-full px-3 py-2 border border-slate-200 dark:border-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white dark:bg-slate-950 text-slate-850 dark:text-slate-100 text-sm cursor-pointer">
+              <select 
+                name="projectType" 
+                value={projectType}
+                onChange={(e) => setProjectType(e.target.value)}
+                className="w-full px-3 py-2 border border-slate-200 dark:border-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white dark:bg-slate-950 text-slate-850 dark:text-slate-100 text-sm cursor-pointer"
+              >
                 <option value="Construction" className="dark:bg-slate-900 dark:text-slate-100">{t('construction')}</option>
                 <option value="Purchasing" className="dark:bg-slate-900 dark:text-slate-100">{t('purchasing')}</option>
                 <option value="Machine repair" className="dark:bg-slate-900 dark:text-slate-100">{t('machineRepair')}</option>
@@ -149,19 +160,56 @@ const ProjectFormModal = ({ isOpen, onClose, onSave, editingProject }) => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{t('retentionAmount')} (M)</label>
-              <input name="retentionAmount" defaultValue={editingProject?.retentionAmount} type="number" step="0.01" min="0" className="w-full px-3 py-2 border border-slate-200 dark:border-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white dark:bg-slate-950 text-slate-850 dark:text-slate-100 text-sm" />
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                {t('retentionAmount')} {isPurchasing ? `(${t('notApplicable')})` : ''}
+              </label>
+              <input 
+                name="retentionAmount" 
+                defaultValue={editingProject?.retentionAmount} 
+                type="number" 
+                step="0.01" 
+                min="0" 
+                disabled={isPurchasing}
+                placeholder={isPurchasing ? t('notApplicable') : 'e.g. 95000'}
+                className="w-full px-3 py-2 border border-slate-200 dark:border-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white dark:bg-slate-950 text-slate-850 dark:text-slate-100 text-sm disabled:opacity-50 disabled:bg-slate-100 dark:disabled:bg-slate-900" 
+              />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{t('retentionPeriodMonths')}</label>
-              <input name="retentionPeriodMonths" defaultValue={editingProject?.retentionPeriodMonths} type="number" min="0" className="w-full px-3 py-2 border border-slate-200 dark:border-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white dark:bg-slate-950 text-slate-850 dark:text-slate-100 text-sm" />
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                {t('retentionPeriodMonths')} {isPurchasing ? `(${t('notApplicable')})` : ''}
+              </label>
+              <input 
+                name="retentionPeriodMonths" 
+                defaultValue={editingProject?.retentionPeriodMonths} 
+                type="number" 
+                min="0" 
+                disabled={isPurchasing}
+                placeholder={isPurchasing ? t('notApplicable') : 'e.g. 12'}
+                className="w-full px-3 py-2 border border-slate-200 dark:border-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white dark:bg-slate-950 text-slate-850 dark:text-slate-100 text-sm disabled:opacity-50 disabled:bg-slate-100 dark:disabled:bg-slate-900" 
+              />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{t('contractor')}</label>
               <input name="contractor" defaultValue={editingProject?.contractor} type="text" className="w-full px-3 py-2 border border-slate-200 dark:border-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white dark:bg-slate-950 text-slate-850 dark:text-slate-100 text-sm" />
             </div>
+
+            {/* Retention Paid Checkbox Toggle (Page 3 Requirement) */}
+            {!isPurchasing && (
+              <div className="md:col-span-2 p-3 bg-slate-50 dark:bg-slate-950/30 border border-slate-200 dark:border-slate-800 rounded-xl flex items-center space-x-3">
+                <input
+                  type="checkbox"
+                  name="retentionPaid"
+                  id="retentionPaid"
+                  defaultChecked={editingProject?.retentionPaid || false}
+                  className="w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500 cursor-pointer"
+                />
+                <label htmlFor="retentionPaid" className="text-sm font-medium text-slate-700 dark:text-slate-300 cursor-pointer select-none">
+                  {t('retentionPaid')} ({t('markAsPaid')})
+                </label>
+              </div>
+            )}
 
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{t('specialRemarks')}</label>

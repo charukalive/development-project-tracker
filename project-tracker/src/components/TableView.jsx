@@ -37,7 +37,8 @@ const TableView = ({ projects, onEdit, onViewDetails, onDelete, onPhotoView, isA
         <table className="w-full text-left text-sm">
           <thead className="bg-slate-50 dark:bg-slate-800/50 text-slate-600 dark:text-slate-350 border-b border-slate-200 dark:border-slate-800">
             <tr>
-              <th className="p-4 font-medium">{t('projectDetails')}</th>
+              {/* Header changed from 'Project details' to 'Project name' */}
+              <th className="p-4 font-medium min-w-[320px]">{t('projectName')}</th>
               <th className="p-4 font-medium">{t('finances')}</th>
               <th className="p-4 font-medium">{t('dates')}</th>
               <th className="p-4 font-medium text-center">{t('retentionPeriodAndRemaining')}</th>
@@ -53,39 +54,44 @@ const TableView = ({ projects, onEdit, onViewDetails, onDelete, onPhotoView, isA
               </tr>
             ) : (
               projects.map(project => {
+                const isPurchasing = project.projectType === 'Purchasing' || project.projectType === 'Purchases' || project.projectType === 'මිලදී ගැනීම්';
+
                 let retentionStatus = null;
                 let isRetentionExceeded = false;
                 let daysRemaining = 0;
                 let yearsRemaining = 0;
 
-                if (project.status === 'Completed') {
-                   if (project.endDate && project.retentionPeriodMonths) {
-                      const endDate = new Date(project.endDate);
-                      const retentionDate = new Date(endDate);
-                      retentionDate.setMonth(retentionDate.getMonth() + parseInt(project.retentionPeriodMonths, 10));
+                if (!isPurchasing) {
+                  if (project.status === 'Completed') {
+                     if (project.endDate && project.retentionPeriodMonths) {
+                        const endDate = new Date(project.endDate);
+                        const retentionDate = new Date(endDate);
+                        retentionDate.setMonth(retentionDate.getMonth() + parseInt(project.retentionPeriodMonths, 10));
 
-                      const today = new Date();
-                      const timeDiff = retentionDate.getTime() - today.getTime();
-                      daysRemaining = Math.ceil(timeDiff / (1000 * 3600 * 24));
+                        const today = new Date();
+                        const timeDiff = retentionDate.getTime() - today.getTime();
+                        daysRemaining = Math.ceil(timeDiff / (1000 * 3600 * 24));
 
-                      if (daysRemaining < 0) {
-                         isRetentionExceeded = true;
-                         daysRemaining = Math.abs(daysRemaining);
-                      }
+                        if (daysRemaining < 0) {
+                           isRetentionExceeded = true;
+                           daysRemaining = Math.abs(daysRemaining);
+                        }
 
-                      if (daysRemaining > 365) {
-                          yearsRemaining = Math.floor(daysRemaining / 365);
-                      }
-                   } else {
-                       retentionStatus = "payable";
-                   }
-                } else {
-                   retentionStatus = "ongoing";
+                        if (daysRemaining > 365) {
+                            yearsRemaining = Math.floor(daysRemaining / 365);
+                        }
+                     } else {
+                         retentionStatus = "payable";
+                     }
+                  } else {
+                     retentionStatus = "ongoing";
+                  }
                 }
 
                 return (
                 <tr key={project.id} className="hover:bg-slate-50 dark:hover:bg-slate-850/50 transition-colors">
-                  <td className="p-4 max-w-md">
+                  {/* Increased Project Name Column Width */}
+                  <td className="p-4 min-w-[320px] max-w-lg">
                     <div className="text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1 leading-snug">
                       <ExpandableText text={project.name} year={project.year} maxLength={80} />
                     </div>
@@ -132,7 +138,9 @@ const TableView = ({ projects, onEdit, onViewDetails, onDelete, onPhotoView, isA
                     <div className="text-slate-655 dark:text-slate-350"><span className="text-slate-400 dark:text-slate-505 text-xs mr-1">End:</span>{project.endDate || '-'}</div>
                   </td>
                   <td className="p-4 align-top text-center">
-                    {project.retentionPaid ? (
+                    {isPurchasing ? (
+                      <span className="text-slate-400 dark:text-slate-500 text-xs font-medium">-</span>
+                    ) : project.retentionPaid ? (
                       <span className="inline-flex items-center px-2.5 py-1.5 rounded bg-emerald-100 dark:bg-emerald-950/20 text-emerald-800 dark:text-emerald-400 text-xs font-semibold border border-emerald-250 dark:border-emerald-900/30">
                         {t('retentionPaid')}
                       </span>
@@ -161,9 +169,9 @@ const TableView = ({ projects, onEdit, onViewDetails, onDelete, onPhotoView, isA
                         )}
                       </>
                     )}
-                    {project.retentionAmount != null && project.retentionAmount > 0 && (
+                    {!isPurchasing && project.retentionAmount != null && project.retentionAmount > 0 && (
                         <div className="text-xs text-slate-500 dark:text-slate-450 mt-1 whitespace-nowrap">
-                          {t('retentionAmount')}: {Number(project.retentionAmount).toFixed(2)}
+                          {t('retentionAmount')}: Rs. {Number(project.retentionAmount).toFixed(2)}
                         </div>
                     )}
                   </td>

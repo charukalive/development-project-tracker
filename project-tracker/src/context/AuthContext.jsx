@@ -1,6 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { auth } from '../firebase';
-import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth';
+import { onAuthStateChanged, signInWithEmailAndPassword, signOut, setPersistence, browserSessionPersistence } from 'firebase/auth';
 
 const AuthContext = createContext();
 
@@ -16,7 +16,12 @@ export const AuthProvider = ({ children }) => {
     return unsubscribe;
   }, []);
 
-  const login = (email, password) => {
+  const login = async (email, password) => {
+    try {
+      await setPersistence(auth, browserSessionPersistence);
+    } catch (e) {
+      console.warn("Could not set browserSessionPersistence, falling back to default:", e);
+    }
     return signInWithEmailAndPassword(auth, email, password);
   };
 
