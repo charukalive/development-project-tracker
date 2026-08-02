@@ -65,13 +65,13 @@ const ProjectDetailModal = ({ isOpen, onClose, project }) => {
             {/* 5. Allocated Amount */}
             <div className="border-b border-slate-100 dark:border-slate-800/60 pb-2">
               <p className="text-xs text-slate-450 dark:text-slate-500 mb-0.5 uppercase tracking-wide font-medium">{t('allocation')}</p>
-              <p className="font-mono text-base font-bold text-slate-800 dark:text-slate-100">Rs. {Number(project.allocation).toFixed(2)} M</p>
+              <p className="font-mono text-base font-bold text-slate-800 dark:text-slate-100">Rs. {Number(project.allocation).toFixed(2)}</p>
             </div>
 
             {/* 6. Paid Amount */}
             <div className="border-b border-slate-100 dark:border-slate-800/60 pb-2">
               <p className="text-xs text-slate-450 dark:text-slate-500 mb-0.5 uppercase tracking-wide font-medium">{t('disbursed')}</p>
-              <p className="font-mono text-base font-bold text-emerald-600 dark:text-emerald-450">Rs. {Number(project.disbursed).toFixed(2)} M</p>
+              <p className="font-mono text-base font-bold text-emerald-600 dark:text-emerald-450">Rs. {Number(project.disbursed).toFixed(2)}</p>
             </div>
 
             {/* 7. Financial Progress */}

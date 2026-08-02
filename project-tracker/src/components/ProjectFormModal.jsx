@@ -145,12 +145,12 @@ const ProjectFormModal = ({ isOpen, onClose, onSave, editingProject }) => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{t('allocation')} (M) *</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{t('allocation')} *</label>
               <input required name="allocation" defaultValue={editingProject?.allocation} type="number" step="0.01" min="0" className="w-full px-3 py-2 border border-slate-200 dark:border-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white dark:bg-slate-950 text-slate-850 dark:text-slate-100 text-sm" />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{t('disbursed')} (M) *</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{t('disbursed')} *</label>
               <input required name="disbursed" defaultValue={editingProject?.disbursed} type="number" step="0.01" min="0" className="w-full px-3 py-2 border border-slate-200 dark:border-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white dark:bg-slate-950 text-slate-850 dark:text-slate-100 text-sm" />
             </div>
 

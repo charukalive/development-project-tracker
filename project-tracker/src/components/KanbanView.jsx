@@ -56,7 +56,7 @@ const KanbanCard = ({ project, onEdit, onViewDetails, onPhotoView, isAdmin }) =>
            <div className="w-full max-w-[100px] bg-slate-100 dark:bg-slate-800 rounded-full h-1.5 mb-1">
              <div className="bg-emerald-500 dark:bg-emerald-600 h-1.5 rounded-full" style={{ width: `${Math.min(utilization, 100)}%` }}></div>
            </div>
-           <p className="text-[10px] font-mono text-slate-500 dark:text-slate-400">{Number(project.disbursed).toFixed(1)} / {Number(project.allocation).toFixed(1)} M</p>
+           <p className="text-[10px] font-mono text-slate-500 dark:text-slate-400">Rs. {Number(project.disbursed).toFixed(2)} / {Number(project.allocation).toFixed(2)}</p>
         </div>
         
         {/* Render Status instead of Program inside card since column is program */}
