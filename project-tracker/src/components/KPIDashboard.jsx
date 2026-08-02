@@ -47,9 +47,9 @@ const KPIDashboard = ({ projects }) => {
 
   const formattedAllocation = useMemo(() => {
     const value = stats.totalAllocation.toFixed(2);
-    if (language === 'si') return `රු. ${value} මි.`;
-    if (language === 'ta') return `ரூ. ${value} மி.`;
-    return `Rs. ${value} M`;
+    if (language === 'si') return `රු. ${value}`;
+    if (language === 'ta') return `ரூ. ${value}`;
+    return `Rs. ${value}`;
   }, [stats.totalAllocation, language]);
 
   return (
