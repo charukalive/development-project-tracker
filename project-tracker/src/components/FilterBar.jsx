@@ -20,12 +20,15 @@ const FilterBar = ({
   statusOptions,
   yearOptions,
   projectTypeOptions,
+  onOpenAdd,
   onAddProject,
+  onExportCSV,
   onPrintPDF,
   filteredProjects,
   isAdmin
 }) => {
   const { t } = useLanguage();
+  const handleAdd = onOpenAdd || onAddProject;
 
   return (
     <div className="bg-white dark:bg-slate-900/50 backdrop-blur-md p-4 rounded-xl shadow-sm border border-slate-100 dark:border-slate-800/80 mb-6 flex flex-col md:flex-row gap-4 items-center justify-between transition-colors duration-200">
@@ -134,7 +137,7 @@ const FilterBar = ({
             <span className="truncate">{t('printPDF')}</span>
           </button>
           <button
-            onClick={() => exportToCSV(filteredProjects)}
+            onClick={onExportCSV || (() => exportToCSV(filteredProjects))}
             className="flex-1 md:flex-none flex items-center justify-center space-x-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 px-3 py-2 rounded-lg text-xs sm:text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-800 hover:scale-[1.03] active:scale-95 group transition-all duration-200 cursor-pointer"
           >
             <Download size={16} className="group-hover:translate-y-0.5 transition-transform duration-200 flex-shrink-0" />
@@ -143,7 +146,7 @@ const FilterBar = ({
         </div>
         {isAdmin && (
           <button
-            onClick={onAddProject}
+            onClick={handleAdd}
             className="w-full sm:w-auto flex items-center justify-center space-x-2 bg-emerald-600 text-white px-4 py-2 rounded-lg text-xs sm:text-sm font-medium hover:bg-emerald-700 hover:scale-[1.03] active:scale-95 group transition-all duration-200 shadow-sm cursor-pointer"
           >
             <Plus size={16} className="group-hover:rotate-90 transition-transform duration-300 flex-shrink-0" />
