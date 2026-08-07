@@ -427,7 +427,7 @@ const AppContent = () => {
           </div>
         ) : (
           <div className="space-y-6">
-            <KPIDashboard projects={projects} />
+            <KPIDashboard projects={sortedProjects} />
             
             <FilterBar
               searchTerm={searchTerm}
